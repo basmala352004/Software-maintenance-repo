@@ -15,6 +15,8 @@ public class CourseService {
     private CourseDB courseDB;
 
     public void createCourse(Course course) {
+        List<Course> courses = courseDB.getListCourses();
+        courses.add(course);
         courseDB.createCourse(course);
     }
 
@@ -30,6 +32,10 @@ public class CourseService {
     }
 
     public void addMediaFile(String courseId, String filePath) {
-        courseDB.addMediaFileToCourse(courseId, filePath);
+        Course course = courseDB.getCourseById(courseId);
+        if (course != null) {
+            course.getMediaFiles().add(filePath);  // Ensure this is executed properly
+            courseDB.addMediaFileToCourse(courseId, filePath);  // Ensure this is also called properly
+        }
     }
 }
