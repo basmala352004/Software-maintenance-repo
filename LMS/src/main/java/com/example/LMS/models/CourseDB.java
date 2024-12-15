@@ -28,4 +28,11 @@ public class CourseDB {
         }
         return null;
     }
+
+    public void addMediaFileToCourse(String courseId, String filePath) {
+        Course course = getCourseById(courseId);
+        if (course != null) {
+            course.getMediaFiles().add(filePath);
+        }
+    }
 }

@@ -6,16 +6,20 @@ public class Course {
     private String courseId;
     private String title;
     private String description;
-    private int durationMinutes; // Add duration field
+    private int durationHours; // Add duration field
     private List<Lesson> listLessons;
+    private List<String> mediaFiles; // Paths to uploaded media files
+
 
     // Constructor
-    public Course(String courseId, String title, String description, int durationMinutes, List<Lesson> listLessons) {
+    public Course(String courseId, String title, String description, int durationHours, List<Lesson> listLessons,List<String> mediaFiles) {
         this.courseId = courseId;
         this.title = title;
         this.description = description;
-        this.durationMinutes = durationMinutes;
+        this.durationHours = durationHours;
         this.listLessons = listLessons;
+        this.mediaFiles = mediaFiles;
+
     }
 
     // Getters and Setters
@@ -38,16 +42,23 @@ public class Course {
         this.description = description;
     }
     public int getDurationMinutes() {
-        return durationMinutes;
+        return durationHours;
     }
     public void setDurationMinutes(int durationMinutes) {
-        this.durationMinutes = durationMinutes;
+        this.durationHours = durationMinutes;
     }
     public List<Lesson> getListLessons() {
         return listLessons;
     }
     public void setListLessons(List<Lesson> listLessons) {
         this.listLessons = listLessons;
+    }
+    public List<String> getMediaFiles() {
+        return mediaFiles;
+    }
+
+    public void setMediaFiles(List<String> mediaFiles) {
+        this.mediaFiles = mediaFiles;
     }
 
     public void addLesson(Lesson lesson) {

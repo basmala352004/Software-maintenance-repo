@@ -28,4 +28,8 @@ public class CourseService {
             course.addLesson(lesson);
         }
     }
+
+    public void addMediaFile(String courseId, String filePath) {
+        courseDB.addMediaFileToCourse(courseId, filePath);
+    }
 }
