@@ -1,4 +1,4 @@
 package com.example.LMS.controllers;
 
-public class InstructorController {
+public class AttendanceController {
 }
