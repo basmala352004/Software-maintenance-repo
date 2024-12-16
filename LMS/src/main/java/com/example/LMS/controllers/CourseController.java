@@ -37,8 +37,7 @@ public class CourseController {
     @PostMapping("/{courseId}/upload-media")
     public ResponseEntity<String> uploadMedia(@PathVariable String courseId, @RequestParam("file") MultipartFile file) {
         try {
-            // Use an absolute or fixed path for uploads
-            String uploadDirPath = "C:/uploads/";  // Absolute path
+
             File uploadDir = new File(UPLOAD_DIRECTORY);
             if (!uploadDir.exists()) {
                 if (!uploadDir.mkdirs()) {
@@ -46,11 +45,11 @@ public class CourseController {
                 }
             }
 
-            // Save the file to the specified path
+            // Save the file to the Path
             String filePath = UPLOAD_DIRECTORY + file.getOriginalFilename();
             file.transferTo(new File(filePath));
 
-            // Add the file path to the course
+            // Add the file path
             courseService.addMediaFile(courseId, filePath);
 
             return ResponseEntity.ok("Media file uploaded successfully: " + filePath);
@@ -62,7 +61,7 @@ public class CourseController {
 
     @GetMapping("/displayCourses")
     public ResponseEntity<List<CourseModel>> displayCourses() {
-        List<CourseModel> courses = courseService.displayCourses();  // Retrieve all courses
+        List<CourseModel> courses = courseService.displayCourses();
         return ResponseEntity.ok(courses);
     }
 }

@@ -21,7 +21,7 @@ public class LessonController {
 
     @PostMapping("/createLesson")
     public ResponseEntity<String> createLesson(@RequestBody LessonModel lessonModel) {
-        // Assuming the courseId is still in the LessonModel
+
         courseService.addLessonToCourse(lessonModel.getCourseModel().getId(), lessonModel);
         lessonService.createLesson(lessonModel);
         return ResponseEntity.ok("Lesson created successfully");

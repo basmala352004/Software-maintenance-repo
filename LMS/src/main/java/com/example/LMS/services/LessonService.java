@@ -14,10 +14,10 @@ public class LessonService {
     private LessonRepository lessonRepository;
 
     public void createLesson(LessonModel lessonModel) {
-        lessonRepository.save(lessonModel); // Persist the LessonModel
+        lessonRepository.save(lessonModel);
     }
 
     public List<LessonModel> displayLessons() {
-        return lessonRepository.findAll(); // Retrieve all lessons from the database
+        return lessonRepository.findAll();
     }
 }

@@ -15,27 +15,27 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     public void createCourse(CourseModel course) {
-        courseRepository.save(course);  // Save the course to the database
+        courseRepository.save(course);
     }
 
     public List<CourseModel> displayCourses() {
-        return courseRepository.findAll();  // Retrieve all courses from the database
+        return courseRepository.findAll();
     }
 
     public void addLessonToCourse(Long courseId, LessonModel lesson) {
-        CourseModel course = courseRepository.findById(courseId).orElse(null);  // Find the course by ID
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
         if (course != null) {
-            lesson.setCourseModel(course);  // Set the course model in the lesson
-            course.addLesson(lesson);  // Add the lesson to the course
-            courseRepository.save(course);  // Save the updated course back to the database
+            lesson.setCourseModel(course);
+            course.addLesson(lesson);
+            courseRepository.save(course);
         }
     }
 
     public void addMediaFile(String courseId, String filePath) {
         CourseModel course = courseRepository.findByCourseId(courseId);
         if (course != null) {
-            course.getMediaFiles().add(filePath);  // Add media file to the course
-            courseRepository.save(course);  // Save the updated course
+            course.getMediaFiles().add(filePath);
+            courseRepository.save(course);
         }
     }
 }
