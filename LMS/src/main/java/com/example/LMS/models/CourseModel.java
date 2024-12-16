@@ -18,7 +18,7 @@ public class CourseModel {
     private int durationHours;
    // relation to LessonModel
     @OneToMany(mappedBy = "courseModel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LessonModel> listLessons;
+    private List<LessonModel> listLessons = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "course_media_files", joinColumns = @JoinColumn(name = "course_id"))
