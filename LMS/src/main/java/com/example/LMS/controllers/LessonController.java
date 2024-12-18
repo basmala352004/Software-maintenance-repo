@@ -1,8 +1,6 @@
 package com.example.LMS.controllers;
 
-
-
-import com.example.LMS.models.Lesson;
+import com.example.LMS.models.LessonModel;
 import com.example.LMS.services.CourseService;
 import com.example.LMS.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +12,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/lessons")
 public class LessonController {
+
     @Autowired
     private LessonService lessonService;
+
     @Autowired
     private CourseService courseService;
 
-    @PostMapping("/create-lesson")
-    public void createLesson(@RequestBody Lesson lesson) {
-        lessonService.createLesson(lesson);
-        courseService.addLessonToCourse(lesson);
-    }
-    @GetMapping("/display-lessons")
-    public ResponseEntity<List<Lesson>> displayLessons() {
+    @PostMapping("/createLesson")
+    public ResponseEntity<String> createLesson(@RequestBody LessonModel lessonModel) {
 
-        return ResponseEntity.ok(lessonService.displayLessons());
+        courseService.addLessonToCourse(lessonModel.getCourseModel().getId(), lessonModel);
+        lessonService.createLesson(lessonModel);
+        return ResponseEntity.ok("Lesson created successfully");
+    }
+
+    @GetMapping("/displayLessons")
+    public ResponseEntity<List<LessonModel>> displayLessons() {
+        List<LessonModel> lessons = lessonService.displayLessons();
+        return ResponseEntity.ok(lessons);
     }
 }

@@ -1,8 +1,8 @@
 package com.example.LMS.services;
 
-import com.example.LMS.models.Course;
-import com.example.LMS.models.CourseDB;
-import com.example.LMS.models.Lesson;
+import com.example.LMS.models.CourseModel;
+import com.example.LMS.models.LessonModel;
+import com.example.LMS.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,30 +12,30 @@ import java.util.List;
 public class CourseService {
 
     @Autowired
-    private CourseDB courseDB;
+    private CourseRepository courseRepository;
 
-    public void createCourse(Course course) {
-        List<Course> courses = courseDB.getListCourses();
-        courses.add(course);
-        courseDB.createCourse(course);
+    public void createCourse(CourseModel course) {
+        courseRepository.save(course);
     }
 
-    public List<Course> displayCourses() {
-        return courseDB.getListCourses();
+    public List<CourseModel> displayCourses() {
+        return courseRepository.findAll();
     }
 
-    public void addLessonToCourse(Lesson lesson) {
-        Course course = courseDB.getCourseById(lesson.getCourseId());
+    public void addLessonToCourse(Long courseId, LessonModel lesson) {
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
         if (course != null) {
+            lesson.setCourseModel(course);
             course.addLesson(lesson);
+            courseRepository.save(course);
         }
     }
 
     public void addMediaFile(String courseId, String filePath) {
-        Course course = courseDB.getCourseById(courseId);
+        CourseModel course = courseRepository.findByCourseId(courseId);
         if (course != null) {
-            course.getMediaFiles().add(filePath);  // Ensure this is executed properly
-            courseDB.addMediaFileToCourse(courseId, filePath);  // Ensure this is also called properly
+            course.getMediaFiles().add(filePath);
+            courseRepository.save(course);
         }
     }
 }

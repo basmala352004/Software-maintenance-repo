@@ -1,102 +1,88 @@
-package com.example.LMS;
 
-import com.example.LMS.models.Course;
-import com.example.LMS.models.CourseDB;
-import com.example.LMS.models.Lesson;
+package com.example.LMS;
+import com.example.LMS.models.CourseModel;
+import com.example.LMS.models.LessonModel;
+import com.example.LMS.repositories.CourseRepository;
 import com.example.LMS.services.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)  // Enables Mockito for this test class
 public class CourseServiceTest {
+
+    @Mock
+    private CourseRepository courseRepository;
 
     @InjectMocks
     private CourseService courseService;
 
-    @Mock
-    private CourseDB courseDB;
-
-    private Course testCourse;
-    private Lesson testLesson;
+    private CourseModel course;
+    private LessonModel lesson;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        // Sample course data
-        testCourse = new Course("C001", "Java Basics", "Introduction to Java", 3, new ArrayList<>(), new ArrayList<>());
-
-        // Sample lesson data (ensure the lesson class is aligned with your constructor)
-        testLesson = new Lesson("C001", "Introduction to Java Lesson", new String[]{"Java basics"}, "Introduction to Java concepts",
-                "John Doe", null, 45, null, "OTP123");
+    void setUp() {
+        // Create a CourseModel and LessonModel for testing
+        course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 40, null, null);
+        lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John", null, 60, null, "1234");
     }
 
     @Test
-    public void testCreateCourse() {
-        // Arrange
-        List<Course> courses = new ArrayList<>(); // Create a mock list of courses
-        when(courseDB.getListCourses()).thenReturn(courses); // Mock that getListCourses returns this list
+    void testCreateCourse() {
+        // Mock save method
+        when(courseRepository.save(course)).thenReturn(course);
 
-        // Act
-        courseService.createCourse(testCourse); // Call the method under test
+        courseService.createCourse(course);  // Call the service method
 
-        // Assert
-        // Verify that the course was added to the list of courses
-        assertEquals(1, courseDB.getListCourses().size());
-        assertEquals("C001", courseDB.getListCourses().get(0).getCourseId());
-
-        // Optionally, verify if createCourse was actually called on courseDB
-        verify(courseDB, times(1)).createCourse(testCourse);
-    }
-
-
-    @Test
-    public void testDisplayCourses() {
-        List<Course> courses = new ArrayList<>();
-        courses.add(testCourse);
-        when(courseDB.getListCourses()).thenReturn(courses);
-
-
-        List<Course> result = courseService.displayCourses();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Java Basics", result.get(0).getTitle());
+        verify(courseRepository, times(1)).save(course);  // Verify that save was called once
     }
 
     @Test
-    public void testAddLessonToCourse() {
-        when(courseDB.getCourseById("C001")).thenReturn(testCourse);
+    void testDisplayCourses() {
+        // Mock the repository to return a list of courses
+        when(courseRepository.findAll()).thenReturn(Arrays.asList(course));
 
+        var courses = courseService.displayCourses();
 
-        courseService.addLessonToCourse(testLesson);
-
-        // Assert
-        assertNotNull(testCourse.getListLessons());
-        assertEquals(1, testCourse.getListLessons().size());
-        assertEquals("Introduction to Java Lesson", testCourse.getListLessons().get(0).getTitle());
-        verify(courseDB, times(1)).getCourseById("C001");
+        assertNotNull(courses);
+        assertEquals(1, courses.size());
+        assertEquals("CS101", courses.get(0).getCourseId());
     }
 
     @Test
-    public void testAddMediaFileToCourse() {
-        String filePath = "uploads/video.mp4";
-        when(courseDB.getCourseById("C001")).thenReturn(testCourse);
+    void testAddLessonToCourse() {
+        // Mock findById to return a course
+        when(courseRepository.findById(course.getId())).thenReturn(Optional.of(course));
 
+        if (course.getListLessons() == null) {
+            course.setListLessons(new ArrayList<>());
+        }
 
-        courseService.addMediaFile("C001", filePath);
+        courseService.addLessonToCourse(course.getId(), lesson);  // Call the service method
 
-        // Assert
-        assertTrue(testCourse.getMediaFiles().contains(filePath));
-        verify(courseDB, times(1)).addMediaFileToCourse("C001", filePath);
+        assertEquals(1, course.getListLessons().size());  // Verify that the lesson was added
+        assertEquals("Lesson 1", course.getListLessons().get(0).getTitle());
+    }
+
+    @Test
+    void testAddMediaFile() {
+        // Mock findByCourseId to return a course
+        when(courseRepository.findByCourseId(course.getCourseId())).thenReturn(course);
+
+        courseService.addMediaFile(course.getCourseId(), "C:/uploads/lesson1.mp4");  // Call the service method
+
+        assertEquals(1, course.getMediaFiles().size());  // Verify that the media file was added
+        assertEquals("C:/uploads/lesson1.mp4", course.getMediaFiles().get(0));
     }
 }

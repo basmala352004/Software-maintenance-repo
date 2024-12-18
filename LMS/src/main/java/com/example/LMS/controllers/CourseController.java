@@ -1,6 +1,6 @@
 package com.example.LMS.controllers;
 
-import com.example.LMS.models.Course;
+import com.example.LMS.models.CourseModel;
 import com.example.LMS.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,35 +19,37 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    private static final String UPLOAD_DIRECTORY = "uploads/";
+    private static final String UPLOAD_DIRECTORY = "C:/uploads/";
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createCourse(@RequestBody Course course) {
+    @PostMapping("/createCourse")
+    public ResponseEntity<String> createCourse(@RequestBody CourseModel course) {
         if (course.getListLessons() == null) {
             course.setListLessons(new ArrayList<>());
         }
         if (course.getMediaFiles() == null) {
             course.setMediaFiles(new ArrayList<>());
         }
-        courseService.createCourse(course);
+
+        courseService.createCourse(course);  // Create the course using the service
         return ResponseEntity.ok("Course created successfully");
     }
 
     @PostMapping("/{courseId}/upload-media")
     public ResponseEntity<String> uploadMedia(@PathVariable String courseId, @RequestParam("file") MultipartFile file) {
         try {
-            // store the uploaded files
-            File uploadDir = new File("C:/uploads/");
+
+            File uploadDir = new File(UPLOAD_DIRECTORY);
             if (!uploadDir.exists()) {
-                // Create the directory if it doesn't exist
-                uploadDir.mkdir();
+                if (!uploadDir.mkdirs()) {
+                    return ResponseEntity.status(500).body("Failed to create upload directory.");
+                }
             }
 
-            // Save the file to the server's upload directory
-            String filePath = "C:/uploads/" + file.getOriginalFilename();  // Set a full file path
+            // Save the file to the Path
+            String filePath = UPLOAD_DIRECTORY + file.getOriginalFilename();
             file.transferTo(new File(filePath));
 
-            // Add the file path to the course
+            // Add the file path
             courseService.addMediaFile(courseId, filePath);
 
             return ResponseEntity.ok("Media file uploaded successfully: " + filePath);
@@ -57,10 +59,9 @@ public class CourseController {
     }
 
 
-    @GetMapping("/display")
-    public ResponseEntity<List<Course>> displayCourses() {
-        List<Course> courses = courseService.displayCourses();
+    @GetMapping("/displayCourses")
+    public ResponseEntity<List<CourseModel>> displayCourses() {
+        List<CourseModel> courses = courseService.displayCourses();
         return ResponseEntity.ok(courses);
     }
 }
-
