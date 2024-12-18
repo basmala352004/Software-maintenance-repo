@@ -14,6 +14,7 @@ public class LessonService {
     private LessonRepository lessonRepository;
 
     public void createLesson(LessonModel lessonModel) {
+        lessonModel.updateEndDate();
         lessonRepository.save(lessonModel);
     }
 
