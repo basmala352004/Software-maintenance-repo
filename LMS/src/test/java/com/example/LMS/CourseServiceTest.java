@@ -1,7 +1,9 @@
 
 package com.example.LMS;
+import com.example.LMS.DTOs.StudentDTO;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.LessonModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.repositories.CourseRepository;
 import com.example.LMS.services.CourseService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -50,15 +53,32 @@ public class CourseServiceTest {
 
     @Test
     void testDisplayCourses() {
-        // Mock the repository to return a list of courses
+        // Create sample students
+        StudentModel student1 = new StudentModel("student1@example.com", "John Doe");
+        StudentModel student2 = new StudentModel("student2@example.com", "Jane Smith");
+
+        // Assign students to the course
+        course.setStudents(Arrays.asList(student1, student2));
+
+        // Mock the repository to return the course
         when(courseRepository.findAll()).thenReturn(Arrays.asList(course));
 
+        // Call the displayCourses function
         var courses = courseService.displayCourses();
 
+        // Verify the results
         assertNotNull(courses);
         assertEquals(1, courses.size());
         assertEquals("CS101", courses.get(0).getCourseId());
+
+        // Verify students in the DTO
+        List<StudentDTO> returnedStudents = courses.get(0).getStudents();
+        assertNotNull(returnedStudents);
+        assertEquals(2, returnedStudents.size());
+        assertEquals("John Doe", returnedStudents.get(0).getName());
+        assertEquals("Jane Smith", returnedStudents.get(1).getName());
     }
+
 
     @Test
     void testAddLessonToCourse() {

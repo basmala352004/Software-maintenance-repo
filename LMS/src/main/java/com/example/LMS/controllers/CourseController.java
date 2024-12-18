@@ -1,5 +1,6 @@
 package com.example.LMS.controllers;
 
+import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,8 @@ public class CourseController {
 
 
     @GetMapping("/displayCourses")
-    public ResponseEntity<List<CourseModel>> displayCourses() {
-        List<CourseModel> courses = courseService.displayCourses();
+    public ResponseEntity<List<CourseDTO>> displayCourses() {
+        List<CourseDTO> courses = courseService.displayCourses();
         return ResponseEntity.ok(courses);
     }
 }

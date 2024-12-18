@@ -1,5 +1,7 @@
 package com.example.LMS.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -97,5 +99,21 @@ public class CourseModel {
 
     public void addLesson(LessonModel lesson) {
         this.listLessons.add(lesson);
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "student_courses",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    List<StudentModel> students;
+
+    public List<StudentModel> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<StudentModel> students) {
+        this.students = students;
     }
 }
