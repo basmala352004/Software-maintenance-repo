@@ -7,6 +7,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    public User() {}
+    public User(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
