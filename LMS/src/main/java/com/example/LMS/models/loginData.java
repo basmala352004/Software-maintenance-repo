@@ -33,4 +33,8 @@ public class loginData {
     private String username;
     private String password;
     private String  email;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
