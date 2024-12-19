@@ -65,4 +65,15 @@ public class CourseController {
         List<CourseDTO> courses = courseService.displayCourses();
         return ResponseEntity.ok(courses);
     }
+    @DeleteMapping("/{courseId}/deleteStudent/{studentId}")
+    public ResponseEntity<String> deleteEnrollStudent(@PathVariable Long courseId, @PathVariable Integer studentId) {
+        courseService.deleteStudentFromCourse(courseId, studentId);
+        return ResponseEntity.ok("Student deleted successfully");
+    }
+
+    @DeleteMapping("/{courseId}/deleteAllStudents")
+    public ResponseEntity<String> deleteAllStudents(@PathVariable Long courseId) {
+        courseService.deleteAllStudentsFromCourse(courseId);
+        return ResponseEntity.ok("All students deleted successfully");
+    }
 }

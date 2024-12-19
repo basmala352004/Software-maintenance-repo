@@ -47,4 +47,22 @@ public class CourseService {
         }
 
     }
+    public void deleteStudentFromCourse(Long courseId, Integer studentId) {
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            course.getStudents().removeIf(student -> student.getId() == studentId);
+            courseRepository.save(course);
+        }
+    }
+
+
+
+    // New method to delete all enrolled students
+    public void deleteAllStudentsFromCourse(Long courseId) {
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            course.getStudents().clear();
+            courseRepository.save(course);
+        }
+    }
 }
