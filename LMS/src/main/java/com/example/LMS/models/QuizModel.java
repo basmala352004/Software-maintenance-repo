@@ -1,5 +1,6 @@
 package com.example.LMS.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,12 @@ public class QuizModel {
 
     // Many-to-One relationship with CourseModel (Each quiz belongs to one course)
     @ManyToOne
-    @JoinColumn(name = "course_id") // The foreign key column in the quiz table
+    @JoinColumn(name = "course_id", nullable = false) // Foreign key in Quiz table
     private CourseModel course;
 
     // One-to-many relationship with QuestionModel (Each quiz has multiple questions)
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // Handles the forward part of the reference for QuestionModel
     private List<QuestionModel> questions = new ArrayList<>();
 
     // Constructors, getters, and setters

@@ -1,5 +1,7 @@
 package com.example.LMS.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,27 +18,27 @@ public class CourseModel {
     private String description;
     private int durationHours;
 
-    // OneToMany relationship with LessonModel
+
     @OneToMany(mappedBy = "courseModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // Handles the forward part of the reference
     private List<LessonModel> listLessons = new ArrayList<>();
 
-    // ElementCollection to store media files (paths)
     @ElementCollection
     @CollectionTable(name = "course_media_files", joinColumns = @JoinColumn(name = "course_id"))
     @Column(name = "media_file")
     private List<String> mediaFiles = new ArrayList<>();
 
-    // OneToMany relationship with QuizModel (One course can have many quizzes)
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Prevent circular reference
     private List<QuizModel> quizzes = new ArrayList<>();
 
-    // ManyToMany relationship with StudentModel
     @ManyToMany
     @JoinTable(
             name = "student_courses",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore // Prevent circular reference
     private List<StudentModel> students = new ArrayList<>();
 
     // Constructors

@@ -8,11 +8,14 @@ public class AttendanceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // Many-to-One relationship with LessonModel
     @ManyToOne
-    @JoinColumn(name = "lesson_id")
+    @JoinColumn(name = "lesson_id", nullable = false)
     private LessonModel lesson;
+
+    // Many-to-One relationship with StudentModel
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private StudentModel student;
     private boolean isAttended;
     private LocalDateTime timestamp;

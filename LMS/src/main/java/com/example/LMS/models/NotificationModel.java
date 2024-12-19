@@ -10,9 +10,11 @@ public class NotificationModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer notificationID;
     private Integer userID;
+    // Many-to-One relationship with StudentModel
     @ManyToOne
-    @JoinColumn(name = "userID", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private StudentModel student;
+
     private String type;
     private String message;
     private Date timestamp;

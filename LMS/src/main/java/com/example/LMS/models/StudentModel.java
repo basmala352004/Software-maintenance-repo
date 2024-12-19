@@ -52,8 +52,8 @@ public class StudentModel {
         this.email = email;
     }
     @ManyToMany(mappedBy = "students")
-
-    List<CourseModel>courses;
+    @JsonIgnore // Prevent serialization of the circular reference
+    private List<CourseModel> courses;
 
     public List<CourseModel> getCourses() {
         return courses;

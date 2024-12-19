@@ -1,5 +1,6 @@
 package com.example.LMS.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +23,14 @@ public class QuestionModel {
     private QuestionType type;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id") // The foreign key column in the question table
+    @JoinColumn(name = "quiz_id") // Foreign key to the Quiz table
+    @JsonBackReference // Prevent circular reference during serialization
     private QuizModel quiz;
 
-    // For MCQ, we can have multiple options and an answer
+    // Options for MCQ questions
     @ElementCollection
     @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
-    @Column(name = "option_text") // Renamed column to avoid reserved keyword conflict
+    @Column(name = "option_text")
     private List<String> options = new ArrayList<>();
 
     private String correctAnswer;

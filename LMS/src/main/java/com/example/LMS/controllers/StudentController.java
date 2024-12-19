@@ -44,9 +44,12 @@ public class StudentController {
         studentService.deleteStudentById(id);
     }
     @PostMapping("/enrollCourse")
-    public ResponseEntity<StudentModel> enrollCourse(@RequestParam("student_id") int studentId, @RequestParam("Course_id") long courseid) {
+    public ResponseEntity<String> enrollCourse(@RequestParam("student_id") int studentId, @RequestParam("Course_id") long courseid) {
         System.out.println(studentId);
+        studentService.enrollStudent(studentId ,  courseid);
 
-        return  ResponseEntity.ok(studentService.enrollStudent(studentId ,  courseid));
+//        return  ResponseEntity.ok(studentService.enrollStudent(studentId ,  courseid));
+        return  ResponseEntity.ok("Student Enroll successfully ");
+
     }
 }

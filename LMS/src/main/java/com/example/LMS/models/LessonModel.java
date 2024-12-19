@@ -1,5 +1,6 @@
 package com.example.LMS.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ public class LessonModel {
     @CollectionTable(name = "lesson_topics", joinColumns = @JoinColumn(name = "lesson_id"))
     @Column(name = "topic")
     private List<String> topics;
+
     private String description;
     private String teacherName;
     private LocalDateTime startDate;
@@ -22,7 +24,8 @@ public class LessonModel {
     private LocalDateTime endDate;
     private String OTP;
     @ManyToOne
-    @JoinColumn(name = "courseId", insertable = false, updatable = false)  // Reference to the courseId in CourseModel
+    @JoinColumn(name = "courseId")
+    @JsonBackReference // Handles the back part of the reference
     private CourseModel courseModel;
 
     public LessonModel(String title, List<String> topics, String description, String teacherName, LocalDateTime startDate, int durationMinutes, String OTP) {
