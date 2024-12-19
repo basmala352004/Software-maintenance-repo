@@ -1,5 +1,5 @@
-
 package com.example.LMS;
+
 import com.example.LMS.DTOs.StudentDTO;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.LessonModel;
@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,9 +36,17 @@ public class CourseServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Initialize students and lessons
+        StudentModel student1 = new StudentModel("student1@example.com", "John Doe");
+        StudentModel student2 = new StudentModel("student2@example.com", "Jane Smith");
+
         // Create a CourseModel and LessonModel for testing
         course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 40, null, null);
-        lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John", null, 60, null, "1234");
+        course.setStudents(Arrays.asList(student1, student2));  // Adding students to the course
+        course.setListLessons(new ArrayList<>());  // Initialize the lessons list
+
+        lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John",
+                LocalDateTime.of(2024, 12, 19, 10, 0), 60, "1234");  // Setting a valid startDate
     }
 
     @Test
@@ -53,13 +61,6 @@ public class CourseServiceTest {
 
     @Test
     void testDisplayCourses() {
-        // Create sample students
-        StudentModel student1 = new StudentModel("student1@example.com", "John Doe");
-        StudentModel student2 = new StudentModel("student2@example.com", "Jane Smith");
-
-        // Assign students to the course
-        course.setStudents(Arrays.asList(student1, student2));
-
         // Mock the repository to return the course
         when(courseRepository.findAll()).thenReturn(Arrays.asList(course));
 
@@ -79,15 +80,10 @@ public class CourseServiceTest {
         assertEquals("Jane Smith", returnedStudents.get(1).getName());
     }
 
-
     @Test
     void testAddLessonToCourse() {
         // Mock findById to return a course
         when(courseRepository.findById(course.getId())).thenReturn(Optional.of(course));
-
-        if (course.getListLessons() == null) {
-            course.setListLessons(new ArrayList<>());
-        }
 
         courseService.addLessonToCourse(course.getId(), lesson);  // Call the service method
 

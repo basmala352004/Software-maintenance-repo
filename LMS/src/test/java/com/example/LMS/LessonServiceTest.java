@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,8 +30,9 @@ public class LessonServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Create a LessonModel for testing
-        lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John", null, 60, null, "1234");
+        // Create a LessonModel for testing with a valid startDate
+        lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John",
+                LocalDateTime.of(2024, 12, 19, 10, 0), 60, "1234");
     }
 
     @Test
