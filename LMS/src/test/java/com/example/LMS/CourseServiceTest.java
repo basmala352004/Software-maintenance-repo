@@ -1,5 +1,6 @@
 package com.example.LMS;
 
+import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.DTOs.StudentDTO;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.LessonModel;
@@ -61,11 +62,25 @@ public class CourseServiceTest {
 
     @Test
     void testDisplayCourses() {
+        // Mock students
+        StudentModel student1 = new StudentModel();
+        student1.setId(1);
+        student1.setName("John Doe");
+
+        StudentModel student2 = new StudentModel();
+        student2.setId(2);
+        student2.setName("Jane Smith");
+
+        // Mock course with students
+        CourseModel course = new CourseModel();
+        course.setCourseId("CS101");
+        course.setStudents(Arrays.asList(student1, student2));
+
         // Mock the repository to return the course
         when(courseRepository.findAll()).thenReturn(Arrays.asList(course));
 
         // Call the displayCourses function
-        var courses = courseService.displayCourses();
+        List<CourseDTO> courses = courseService.displayCourses();
 
         // Verify the results
         assertNotNull(courses);
@@ -79,6 +94,7 @@ public class CourseServiceTest {
         assertEquals("John Doe", returnedStudents.get(0).getName());
         assertEquals("Jane Smith", returnedStudents.get(1).getName());
     }
+
 
     @Test
     void testAddLessonToCourse() {

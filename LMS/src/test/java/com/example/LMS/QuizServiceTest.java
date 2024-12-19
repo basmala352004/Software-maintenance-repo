@@ -1,22 +1,25 @@
 package com.example.LMS;
 
-import com.example.LMS.models.*;
-import com.example.LMS.repositories.QuizRepository;
+import com.example.LMS.models.QuestionModel;
+import com.example.LMS.models.QuizModel;
 import com.example.LMS.repositories.QuestionRepository;
+import com.example.LMS.repositories.QuizRepository;
 import com.example.LMS.services.QuizService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class QuizServiceTest {
+class QuizServiceTest {
 
     @Mock
     private QuizRepository quizRepository;
@@ -27,99 +30,91 @@ public class QuizServiceTest {
     @InjectMocks
     private QuizService quizService;
 
-    private QuizModel quiz;
-    private QuestionModel question;
-
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Set up a mock Quiz and Question
-        quiz = new QuizModel();
-        quiz.setId(1L);
-        quiz.setQuizTitle("Test Quiz");
-
-        question = new QuestionModel();
-        question.setId(1L);
-        question.setQuestionText("What is 2+2?");
-        question.setType(QuestionModel.QuestionType.MCQ); // Set the type as MCQ
-        question.setCorrectAnswer("4");
     }
 
     @Test
-    public void testCreateQuiz() {
+    void testCreateQuiz() {
+        QuizModel quiz = new QuizModel();
+        quiz.setId(1L);
+        quiz.setQuizTitle("Test Quiz");
+
         quizService.createQuiz(quiz);
 
-        // Verify that the quiz repository's save method is called once
         verify(quizRepository, times(1)).save(quiz);
     }
 
     @Test
-    public void testAddQuestionToQuiz() {
-        // Arrange: Mock the behavior of quizRepository to return the quiz when searching by id
+    void testAddQuestionToQuiz() {
+        QuizModel quiz = new QuizModel();
+        quiz.setId(1L);
+        quiz.setQuestions(new ArrayList<>());
+
+        QuestionModel question = new QuestionModel();
+        question.setId(null); // Simulate a new question
+        question.setQuestionText("Sample Question");
+
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
+        when(questionRepository.save(question)).thenAnswer(invocation -> {
+            question.setId(1L); // Simulate database assigning an ID
+            return question;
+        });
 
-        // Set question ID to null to trigger the save() call in addQuestionToQuiz
-        question.setId(null);  // This will allow questionRepository.save() to be invoked
-
-        // Act: Call the method to add the question to the quiz
         quizService.addQuestionToQuiz(1L, question);
 
-        // Assert: Verify that the questionRepository.save() method is called once
-        verify(questionRepository, times(1)).save(any(QuestionModel.class));
+        verify(questionRepository, times(1)).save(question);
+        verify(quizRepository, times(1)).save(quiz);
 
-        // Assert: Verify that the quizRepository.save() method is called once
-        verify(quizRepository, times(1)).save(any(QuizModel.class));
-
-        // Assert: Verify that the question is indeed added to the quiz's questions list
-        assertTrue(quiz.getQuestions().contains(question), "The question was not added to the quiz.");
+        assertEquals(1, quiz.getQuestions().size());
+        assertEquals(question, quiz.getQuestions().get(0));
+        assertEquals(quiz, question.getQuiz());
     }
 
 
     @Test
-    public void testGetRandomQuestions() {
-        // Adding some questions to the quiz
-        QuestionModel question1 = new QuestionModel();
-        question1.setId(2L);
-        question1.setQuestionText("What is 3+3?");
-        question1.setType(QuestionModel.QuestionType.MCQ); // Set the type
-        question1.setCorrectAnswer("6");
+    void testGetRandomQuestions() {
+        QuizModel quiz = new QuizModel();
+        quiz.setId(1L);
 
-        QuestionModel question2 = new QuestionModel();
-        question2.setId(3L);
-        question2.setQuestionText("What is 4+4?");
-        question2.setType(QuestionModel.QuestionType.MCQ); // Set the type
-        question2.setCorrectAnswer("8");
+        QuestionModel q1 = new QuestionModel();
+        q1.setId(1L);
+        q1.setQuestionText("Question 1");
 
-        quiz.setQuestions(Arrays.asList(question, question1, question2));
+        QuestionModel q2 = new QuestionModel();
+        q2.setId(2L);
+        q2.setQuestionText("Question 2");
+
+        quiz.setQuestions(new ArrayList<>(Arrays.asList(q1, q2)));
 
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
 
-        // Test random question selection
-        var questions = quizService.getRandomQuestions(1L, 2);
+        List<QuestionModel> randomQuestions = quizService.getRandomQuestions(1L, 1);
 
-        // Verify the correct number of questions are selected
-        assertEquals(2, questions.size());
-        assertTrue(questions.contains(question));
-        assertTrue(questions.contains(question1) || questions.contains(question2)); // One of the other two
+        assertEquals(1, randomQuestions.size());
+        assertTrue(quiz.getQuestions().contains(randomQuestions.get(0)));
     }
 
     @Test
-    public void testGetQuizById() {
+    void testGetQuizById() {
+        QuizModel quiz = new QuizModel();
+        quiz.setId(1L);
+
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
 
-        Optional<QuizModel> foundQuiz = quizService.getQuizById(1L);
+        Optional<QuizModel> fetchedQuiz = quizService.getQuizById(1L);
 
-        assertTrue(foundQuiz.isPresent());
-        assertEquals(quiz.getId(), foundQuiz.get().getId());
+        assertTrue(fetchedQuiz.isPresent());
+        assertEquals(quiz, fetchedQuiz.get());
     }
 
     @Test
-    public void testGetQuizByIdNotFound() {
+    void testGetQuizById_NotFound() {
         when(quizRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Optional<QuizModel> foundQuiz = quizService.getQuizById(1L);
+        Optional<QuizModel> fetchedQuiz = quizService.getQuizById(1L);
 
-        assertFalse(foundQuiz.isPresent());
+        assertFalse(fetchedQuiz.isPresent());
     }
 }
