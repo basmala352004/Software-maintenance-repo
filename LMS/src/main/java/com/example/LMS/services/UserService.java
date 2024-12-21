@@ -72,7 +72,7 @@ public class UserService {
 
 
         if ("STUDENT".equalsIgnoreCase(user.getRole())) {
-            StudentModel student = new StudentModel(user.getName(), user.getPassword(), user.getRole(), user.getEmail());
+            StudentModel student = new StudentModel(user.getName(), user.getRole(), user.getPassword(), user.getEmail());
             User savedUser = studentRepository.save(student);
             Profile profile = new Profile(savedUser);
             profileRepository.save(profile);
@@ -87,10 +87,6 @@ public class UserService {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         }
-
-
-
-
     }
 
 

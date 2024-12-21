@@ -75,12 +75,14 @@ public class LessonModel {
     }
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
+        updateEndDate();
     }
     public int getDurationMinutes() {
         return durationMinutes;
     }
     public void setDurationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
+        updateEndDate();
     }
     public LocalDateTime getEndDate() {
         return endDate;

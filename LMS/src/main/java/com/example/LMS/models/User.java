@@ -1,6 +1,9 @@
 package com.example.LMS.models;
 import jakarta.persistence.*;
+
+
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "_users")
 public class User {
     @Id

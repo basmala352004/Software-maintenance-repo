@@ -54,7 +54,7 @@ public class AttendanceService {
             isAttended = true;
             AttendanceModel attendance = new AttendanceModel(lesson, student, isAttended, currentTime);
             attendanceRepository.save(attendance);
-            returnMessage = "You are successfully attend";
+            returnMessage = "You are successfully attend.";
         }
         return returnMessage;
     }
