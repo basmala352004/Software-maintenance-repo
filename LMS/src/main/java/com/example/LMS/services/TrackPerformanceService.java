@@ -1,22 +1,11 @@
 package com.example.LMS.services;
-import com.example.LMS.models.CourseModel;
-import com.example.LMS.models.StudentModel;
-import com.example.LMS.models.LessonModel;
-import com.example.LMS.models.AttendanceModel;
-import com.example.LMS.repositories.CourseRepository;
-import com.example.LMS.repositories.StudentRepository;
-import com.example.LMS.repositories.AttendanceRepository;
-import com.example.LMS.repositories.LessonRepository;
+
+import com.example.LMS.models.*;
+import com.example.LMS.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Optional;
-
-
+import java.util.*;
 
 @Service
 public class TrackPerformanceService {
@@ -29,18 +18,17 @@ public class TrackPerformanceService {
     private CourseRepository courseRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private AssignmentRepository assignmentRepository;
 
-
+    // Fetch performance for courses based on attendance
     public List<Map<String, Object>> getPerformanceForCourses(List<String> courseNames, String lessonName) {
         List<Map<String, Object>> result = new ArrayList<>();
 
-
         for (String courseName : courseNames) {
-
             Optional<CourseModel> courseOpt = courseRepository.findByTitle(courseName);
             if (courseOpt.isPresent()) {
                 CourseModel course = courseOpt.get();
-
 
                 Optional<LessonModel> lessonOpt = course.getListLessons().stream()
                         .filter(lesson -> lesson.getTitle().equals(lessonName))
@@ -48,7 +36,6 @@ public class TrackPerformanceService {
 
                 if (lessonOpt.isPresent()) {
                     LessonModel lesson = lessonOpt.get();
-
                     List<AttendanceModel> attendanceRecords = attendanceRepository.findByLesson(lesson);
 
                     Map<String, Object> coursePerformance = new HashMap<>();
@@ -56,15 +43,12 @@ public class TrackPerformanceService {
 
                     List<Map<String, Object>> performanceDetails = new ArrayList<>();
 
-
                     for (AttendanceModel record : attendanceRecords) {
                         Map<String, Object> performanceDetail = new HashMap<>();
                         performanceDetail.put("Student ID", record.getStudent().getId());
                         performanceDetail.put("Attendance Status", record.isAttended() ? "Attended" : "Not Attended");
                         performanceDetail.put("Lesson", lesson.getTitle());
-                        performanceDetail.put("Date", record.getTimestamp().toLocalDate()); //اليوم
-
-
+                        performanceDetail.put("Date", record.getTimestamp().toLocalDate());
 
                         performanceDetails.add(performanceDetail);
                     }
@@ -74,9 +58,47 @@ public class TrackPerformanceService {
                 }
             }
         }
-
         return result;
     }
 
-    // ريبورت
+    // Fetch assignment grades and feedback
+    public Map<String, Object> getAssignmentGrades(Integer assignmentId) {
+        Optional<Assignment> assignmentOpt = assignmentRepository.findById(assignmentId);
+
+        if (assignmentOpt.isPresent()) {
+            Assignment assignment = assignmentOpt.get();
+
+            // Creating the response map
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("assignmentId", assignment.getAssignmentID());
+            result.put("assignmentTitle", assignment.getTitle());
+
+            // Fetching students who submitted the assignment
+            List<StudentModel> students = studentRepository.findAll(); // Adjust if there's a direct relation with Assignment
+            List<Map<String, Object>> studentsGrades = new ArrayList<>();
+
+            for (StudentModel student : students) {
+                Map<String, Object> studentDetails = new HashMap<>();
+                studentDetails.put("studentId", student.getId());
+                studentDetails.put("studentName", student.getName());
+                studentDetails.put("grade", assignment.getGrades());
+                studentDetails.put("feedback", assignment.getFeedback());
+                studentDetails.put("date", new Date().toString()); // Replace with actual submission date if available
+                List<CourseModel> courses = courseRepository.findByStudentId(Long.valueOf(student.getId())); // Ensure Long type
+                if (!courses.isEmpty()) {
+                    // Assuming the first course is the one to include; modify as necessary for your use case
+                    studentDetails.put("courseId", courses.get(0).getId());  // Add the course ID to the student details
+                } else {
+                    // Handle case when no courses are found for the student
+                    studentDetails.put("courseId", "No course found");
+                }
+                studentsGrades.add(studentDetails);
+            }
+
+            result.put("students", studentsGrades);
+            return result;
+        }
+
+        throw new NoSuchElementException("Assignment not found with ID: " + assignmentId);
+    }
 }

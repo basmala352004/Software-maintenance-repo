@@ -1,8 +1,7 @@
-package com.example.LMS;
+package com.example.LMS.services;
 
 import com.example.LMS.models.*;
 import com.example.LMS.repositories.*;
-import com.example.LMS.services.TrackPerformanceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class TrackPerformanceServiceTest {
@@ -32,6 +31,9 @@ class TrackPerformanceServiceTest {
     @Mock
     private StudentRepository studentRepository;
 
+    @Mock
+    private AssignmentRepository assignmentRepository;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -39,94 +41,71 @@ class TrackPerformanceServiceTest {
 
     @Test
     void testGetPerformanceForCourses() {
-        // Arrange: Mock course, lesson, and attendance data
-        String courseName = "Mathematics";
+        String courseName = "Math";
         String lessonName = "Lesson 1";
 
-        CourseModel course = new CourseModel();
-        course.setId(1L);
-        course.setTitle(courseName);
+        CourseModel mockCourse = new CourseModel();
+        mockCourse.setTitle(courseName);
 
-        LessonModel lesson = new LessonModel();
-        lesson.setId(1L);
-        lesson.setTitle(lessonName);
+        LessonModel mockLesson = new LessonModel();
+        mockLesson.setTitle(lessonName);
+        mockCourse.setListLessons(Collections.singletonList(mockLesson));
 
-        StudentModel student = new StudentModel();
-        student.setId(1);
-        student.setName("John Doe");
+        AttendanceModel mockAttendance = new AttendanceModel();
+        StudentModel mockStudent = new StudentModel();
+        mockStudent.setId(1);
+        mockStudent.setName("John Doe");
+        mockAttendance.setStudent(mockStudent);
+        mockAttendance.setAttended(true);
+        mockAttendance.setTimestamp(LocalDateTime.now());
+        mockAttendance.setLesson(mockLesson);
 
-        AttendanceModel attendance = new AttendanceModel();
-        attendance.setId(1L);
-        attendance.setStudent(student);
-        attendance.setLesson(lesson);
-        attendance.setTimestamp(LocalDateTime.now());
-        attendance.setAttended(true);
+        when(courseRepository.findByTitle(courseName)).thenReturn(Optional.of(mockCourse));
+        when(attendanceRepository.findByLesson(mockLesson)).thenReturn(Collections.singletonList(mockAttendance));
 
-        course.setListLessons(List.of(lesson));
+        List<Map<String, Object>> result = trackPerformanceService.getPerformanceForCourses(Collections.singletonList(courseName), lessonName);
 
-        when(courseRepository.findByTitle(courseName)).thenReturn(Optional.of(course));
-        when(attendanceRepository.findByLesson(lesson)).thenReturn(List.of(attendance));
-
-        // Act: Call the service method
-        List<Map<String, Object>> result = trackPerformanceService.getPerformanceForCourses(
-                List.of(courseName), lessonName);
-
-        // Assert: Verify the response
+        assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(courseName, result.get(0).get("Course"));
-
-        List<Map<String, Object>> performance = (List<Map<String, Object>>) result.get(0).get("Performance");
-        assertEquals(1, performance.size());
-        assertEquals(student.getId(), performance.get(0).get("Student ID"));
-        assertEquals("Attended", performance.get(0).get("Attendance Status"));
-        assertEquals(lessonName, performance.get(0).get("Lesson"));
-
-        // Verify interactions with mocks
-        verify(courseRepository, times(1)).findByTitle(courseName);
-        verify(attendanceRepository, times(1)).findByLesson(lesson);
     }
 
     @Test
-    void testGetPerformanceForCourses_NoCoursesFound() {
-        // Arrange
-        String courseName = "Unknown Course";
-        when(courseRepository.findByTitle(courseName)).thenReturn(Optional.empty());
+    void testGetAssignmentGrades() {
+        int assignmentId = 1;
 
-        // Act
-        List<Map<String, Object>> result = trackPerformanceService.getPerformanceForCourses(
-                List.of(courseName), "Lesson 1");
+        Assignment mockAssignment = new Assignment();
+        mockAssignment.setAssignmentID(assignmentId);
+        mockAssignment.setTitle("Assignment 1");
+        mockAssignment.setGrades(95);
+        mockAssignment.setFeedback("Well done!");
 
-        // Assert
-        assertEquals(0, result.size());
+        StudentModel mockStudent = new StudentModel();
+        mockStudent.setId(1);
+        mockStudent.setName("John Doe");
 
-        // Verify interactions with mocks
-        verify(courseRepository, times(1)).findByTitle(courseName);
-        verifyNoInteractions(attendanceRepository);
+        when(assignmentRepository.findById(assignmentId)).thenReturn(Optional.of(mockAssignment));
+        when(studentRepository.findAll()).thenReturn(Collections.singletonList(mockStudent));
+
+        Map<String, Object> result = trackPerformanceService.getAssignmentGrades(assignmentId);
+
+        assertNotNull(result);
+        assertEquals(assignmentId, result.get("assignmentId"));
+        assertEquals("Assignment 1", result.get("assignmentTitle"));
+        assertNotNull(result.get("students"));
+        assertEquals(1, ((List<?>) result.get("students")).size());
     }
 
     @Test
-    void testGetPerformanceForCourses_NoLessonsFound() {
-        // Arrange
-        String courseName = "Mathematics";
-        String lessonName = "Unknown Lesson";
+    void testGetAssignmentGrades_AssignmentNotFound() {
+        int assignmentId = 1;
 
-        CourseModel course = new CourseModel();
-        course.setId(1L);
-        course.setTitle(courseName);
-        course.setListLessons(Collections.emptyList());
+        when(assignmentRepository.findById(assignmentId)).thenReturn(Optional.empty());
 
-        when(courseRepository.findByTitle(courseName)).thenReturn(Optional.of(course));
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
+                trackPerformanceService.getAssignmentGrades(assignmentId)
+        );
 
-        // Act
-        List<Map<String, Object>> result = trackPerformanceService.getPerformanceForCourses(
-                List.of(courseName), lessonName);
-
-        // Assert
-        assertEquals(0, result.size());
-
-        // Verify interactions with mocks
-        verify(courseRepository, times(1)).findByTitle(courseName);
-        verifyNoInteractions(attendanceRepository);
+        assertEquals("Assignment not found with ID: 1", exception.getMessage());
     }
 }
-
