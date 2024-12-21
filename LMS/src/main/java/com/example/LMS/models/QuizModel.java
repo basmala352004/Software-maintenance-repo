@@ -13,7 +13,7 @@ public class QuizModel {
     private Long id;
 
     private String quizTitle;
-
+    private double grade;
     // Many-to-One relationship with CourseModel (Each quiz belongs to one course)
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false) // Foreign key in Quiz table
@@ -67,5 +67,11 @@ public class QuizModel {
     public void addQuestion(QuestionModel question) {
         this.questions.add(question);
         question.setQuiz(this); // Set the quiz for this question
+    }
+    public double getGrade() {
+        return grade;
+    }
+    public void setGrade(double grade) {
+        this.grade = grade;
     }
 }

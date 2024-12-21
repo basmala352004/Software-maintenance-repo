@@ -57,7 +57,14 @@ public class QuizService {
         }
         return Collections.emptyList(); // Return an empty list if the quiz does not exist
     }
-
+    public QuizModel gradeQuiz(long quizId, double grade) {
+        QuizModel quiz = quizRepository.findById(quizId).orElse(null);
+        if (quiz != null) {
+            quiz.setGrade(grade);
+            return quizRepository.save(quiz);
+        }
+        return null;
+    }
 
     // Fetch quiz by ID, returning Optional to handle quiz not found case
     public Optional<QuizModel> getQuizById(Long quizId) {

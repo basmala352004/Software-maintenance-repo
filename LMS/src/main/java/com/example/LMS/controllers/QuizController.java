@@ -50,5 +50,12 @@ public class QuizController {
         List<QuestionModel> questions = quizService.getRandomQuestions(quizId, numberOfQuestions);
         return ResponseEntity.ok(questions);
     }
-
+    @PostMapping("/{quizId}/grade")
+    public ResponseEntity<QuizModel> gradeQuiz(
+            @PathVariable long quizId,
+            @RequestParam double grade,
+            @RequestParam String feedback)
+    {
+        return ResponseEntity.ok(quizService.gradeQuiz(quizId, grade));
+    }
 }

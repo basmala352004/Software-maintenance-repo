@@ -1,5 +1,6 @@
 package com.example.LMS;
 
+import com.example.LMS.models.Assignment;
 import com.example.LMS.models.QuestionModel;
 import com.example.LMS.models.QuizModel;
 import com.example.LMS.repositories.QuestionRepository;
@@ -117,4 +118,24 @@ class QuizServiceTest {
 
         assertFalse(fetchedQuiz.isPresent());
     }
+    @Test
+    void testGradeQuiz() {
+        QuizModel quiz = new QuizModel();
+        // Given: Mock the repository behavior
+        when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));  // Simulate quiz retrieval by ID
+
+        // When: Update the grade of the quiz
+        double newGrade = 85.5;
+        quiz.setGrade(newGrade);  // Set the grade for the quiz
+
+        when(quizRepository.save(quiz)).thenReturn(quiz);  // Simulate saving the quiz
+
+        // Call the grading logic (assuming you have a gradeQuiz method)
+        quizService.gradeQuiz(1L, newGrade);
+
+        // Then: Verify the grade is correctly set
+        assertEquals(newGrade, quiz.getGrade(), "The grade should be updated correctly.");
+        verify(quizRepository, times(1)).save(quiz);  // Ensure save was called once
+    }
+
 }

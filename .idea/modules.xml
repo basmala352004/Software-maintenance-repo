@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Java-Based-Learning-Management-System.iml" filepath="$PROJECT_DIR$/.idea/Java-Based-Learning-Management-System.iml" />
-      <module fileurl="file://$PROJECT_DIR$/LMS/LMS.iml" filepath="$PROJECT_DIR$/LMS/LMS.iml" />
     </modules>
   </component>
 </project>
