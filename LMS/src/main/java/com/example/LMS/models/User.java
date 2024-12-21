@@ -3,13 +3,31 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "_users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     public User() {}
+
     public User(Integer id) {
         this.id = id;
+    }
+
+    public User(Integer id, String email, String name) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+    }
+
+    public User(String name, String role, String password, String email) {
+        this.name = name;
+        this.role = role;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
     public Integer getId() {
@@ -20,10 +38,19 @@ public class User {
         this.id = id;
     }
 
+
     private String name;
     private String password;
     private String role;
     private String email;
+
+    public User(Integer id, String name, String password, String role, String email) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+    }
 
     public String getName() {
         return name;

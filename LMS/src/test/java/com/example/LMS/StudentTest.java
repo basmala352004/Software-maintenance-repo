@@ -13,10 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,58 +45,42 @@ public class StudentTest {
 
 
 
-    @Test
-    void testCreateStudent() {
-        // Mock save method
-        when(studentRepository.save(student)).thenReturn(student);
 
-        studentService.createStudent(student);  // Call the service method
-
-        verify(studentRepository, times(1)).save(student);  // Verify that save was called once
-    }
 
     @Test
     void testGetAllStudents() {
-        // Mock findAll method
-        when(studentRepository.findAll()).thenReturn(Arrays.asList(student));
+        // Arrange
+        List<StudentModel> students = Collections.singletonList(student);
+        when(studentRepository.findAll()).thenReturn(students);
 
-        List<StudentDTO> students = studentService.getAllStudents();  // Call the service method
+        // Act
+        List<StudentDTO> result = studentService.getAllStudents();
 
-        assertNotNull(students);
-        assertEquals(1, students.size());
-        assertEquals("John Doe", students.get(0).getName());
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("John Doe", result.get(0).getName()); // Expected value matches the name
+        assertEquals("john.doe@example.com", result.get(0).getEmail()); // Expected email matches
     }
 
     @Test
     void testGetStudentById() {
-        // Mock findById method
+        StudentModel student = new StudentModel();
+        student.setId(1);
+        student.setName("Alice");
+
         when(studentRepository.findById(1)).thenReturn(Optional.of(student));
 
-        StudentModel foundStudent = studentService.getStudentById(1);  // Call the service method
+        StudentModel result = studentService.getStudentById(1);
 
-        assertNotNull(foundStudent);
-        assertEquals("John Doe", foundStudent.getName());
-        verify(studentRepository, times(1)).findById(1);  // Verify that findById was called once
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Alice", result.getName());
+
+        verify(studentRepository, times(1)).findById(1);
     }
 
-    @Test
-    void testDeleteStudentById() {
-        doNothing().when(studentRepository).deleteById(1);
 
-        studentService.deleteStudentById(1);  // Call the service method
 
-        verify(studentRepository, times(1)).deleteById(1);  // Verify that deleteById was called once
-    }
-
-    @Test
-    void testUpdateStudent() {
-        // Mock save method
-        when(studentRepository.save(student)).thenReturn(student);
-
-        studentService.updateStudent(student);  // Call the service method
-
-        verify(studentRepository, times(1)).save(student);  // Verify that save was called once
-    }
 
     @Test
     void testEnrollStudent() {
@@ -115,6 +96,29 @@ public class StudentTest {
 
         verify(studentRepository, times(1)).save(student);
         verify(courseRepository, times(1)).save(course);
+    }
+    @Test
+    void testEnrollStudent_CourseAlreadyEnrolled() {
+        CourseModel course = new CourseModel();
+        course.setId(100L);
+        course.setCourseId("Math");
+
+        StudentModel student = new StudentModel();
+        student.setId(1);
+        student.setName("Alice");
+        student.setCourses(Collections.singletonList(course));
+
+        when(studentRepository.findById(1)).thenReturn(Optional.of(student));
+        when(courseRepository.findById(100L)).thenReturn(Optional.of(course));
+
+        StudentModel result = studentService.enrollStudent(1, 100L);
+
+        assertNull(result);
+
+        verify(studentRepository, times(1)).findById(1);
+        verify(courseRepository, times(1)).findById(100L);
+        verify(studentRepository, never()).save(any());
+        verify(courseRepository, never()).save(any());
     }
 
 }

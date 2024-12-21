@@ -8,46 +8,30 @@ import java.util.List;
 @Entity
 public class StudentModel extends User {
 
-    @Column
-    String name;
-    @Column(unique=true)
-    String email;
 
-    public StudentModel() {
+    public StudentModel(Integer id, String name, String password, String role, String email) {
+        super(id, name, password, role, email);
     }
 
-
-    public StudentModel( Integer id,String email, String name) {
-        super(id);
-        this.email = email;
-        this.name = name;
-    }
-    public StudentModel( String email, String name) {
-        this.email = email;
-        this.name = name;
+    public StudentModel(String name, String role, String password, String email) {
+        super(name, role, password, email);
     }
 
-
-
-
-    public String getName() {
-        return name;
+    public StudentModel(Integer id, String email, String name) {
+        super(id, email, name);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
     @ManyToMany(mappedBy = "students")
     @JsonIgnore // Prevent serialization of the circular reference
     private List<CourseModel> courses;
+
+    public StudentModel() {
+
+    }
+
+    public StudentModel(String name, String password) {
+        super(name, password);
+    }
 
     public List<CourseModel> getCourses() {
         return courses;

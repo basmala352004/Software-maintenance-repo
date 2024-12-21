@@ -1,34 +1,42 @@
 package com.example.LMS.services;
 
 import com.example.LMS.models.Profile;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.models.User;
 import com.example.LMS.models.loginData;
+import com.example.LMS.repositories.StudentRepository;
 import com.example.LMS.repositories.UserRepository;
 import com.example.LMS.repositories.profileRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private profileRepository profileRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
-
+;
     @PostMapping("/register")
+
     public ResponseEntity<Object> register(@RequestBody User user) {
 
         // validate
@@ -63,12 +71,26 @@ public class UserService {
         }
 
 
-        User savedUser = userRepository.save(user);
+        if ("STUDENT".equalsIgnoreCase(user.getRole())) {
+            StudentModel student = new StudentModel(user.getName(), user.getPassword(), user.getRole(), user.getEmail());
+            User savedUser = studentRepository.save(student);
+            Profile profile = new Profile(savedUser);
+            profileRepository.save(profile);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
 
-        Profile profile = new Profile(savedUser);
-        profileRepository.save(profile);
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        else{
+           User savedUser = userRepository.save(user);
+            Profile profile = new Profile(savedUser);
+            profileRepository.save(profile);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        }
+
+
+
+
     }
 
 

@@ -25,30 +25,11 @@ public class StudentController {
     public ResponseEntity<StudentModel>  retrieveStudentById(@PathVariable int id) {
         return ResponseEntity.ok(studentService.getStudentById(id));
     }
-    @PostMapping("/add")
-    public ResponseEntity<StudentModel> addStudent(@RequestBody StudentModel student) {
-        studentService.createStudent(student);
-        return ResponseEntity.ok(student);
-    }
-    @PutMapping("/update")
-    public ResponseEntity<StudentModel> updateStudent(@RequestBody StudentModel student) {
-        studentService.updateStudent(student);
-        return ResponseEntity.ok(student);
-    }
-    @DeleteMapping("/delete")
-    public void deleteAllStudents() {
-        studentService.deleteAllStudents();
-    }
-    @DeleteMapping("/delete/{id}")
-    public void deleteStudentById(@PathVariable int id) {
-        studentService.deleteStudentById(id);
-    }
+
     @PostMapping("/enrollCourse")
     public ResponseEntity<String> enrollCourse(@RequestParam("student_id") int studentId, @RequestParam("Course_id") long courseid) {
         System.out.println(studentId);
         studentService.enrollStudent(studentId ,  courseid);
-
-//        return  ResponseEntity.ok(studentService.enrollStudent(studentId ,  courseid));
         return  ResponseEntity.ok("Student Enroll successfully ");
 
     }

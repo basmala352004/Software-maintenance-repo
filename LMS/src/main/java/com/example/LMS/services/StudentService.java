@@ -22,9 +22,6 @@ public class StudentService {
         this.courseRepository = courseRepository;
     }
 
-    public void createStudent(StudentModel s) {
-        studentRepository.save(s);
-    }
     public List<StudentDTO> getAllStudents() {
         List<StudentModel> students = studentRepository.findAll();
         List<StudentDTO> studentDTOS = students.stream().map(s -> {
@@ -38,15 +35,7 @@ public class StudentService {
     public StudentModel getStudentById(int id) {
         return studentRepository.findById(id).get();
     }
-    public void deleteStudentById(int id) {
-        studentRepository.deleteById(id);
-    }
-    public void updateStudent(StudentModel s) {
-        studentRepository.save(s);
-    }
-    public void deleteAllStudents() {
-        studentRepository.deleteAll();
-    }
+
     public StudentModel enrollStudent( int studentId, long csid) {
         // اوزين نجيب ال طالب العنده ال
         StudentModel s = studentRepository.findById(studentId).get();
