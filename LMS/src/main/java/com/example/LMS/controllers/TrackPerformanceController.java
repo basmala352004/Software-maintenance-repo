@@ -15,17 +15,23 @@ public class TrackPerformanceController {
     @Autowired
     private TrackPerformanceService trackPerformanceService;
 
-    @PostMapping(value="/track")
+    // Endpoint for tracking performance based on attendance
+    @PostMapping(value = "/track")
     public ResponseEntity<List<Map<String, Object>>> getPerformanceForCourses(
             @RequestBody PerformanceRequest request) {
-
         List<Map<String, Object>> performanceDetails = trackPerformanceService.getPerformanceForCourses(
                 request.getCourseNames(), request.getLessonName());
-
         return ResponseEntity.ok(performanceDetails);
     }
 
+    // Endpoint for fetching assignment grades and feedback
+    @GetMapping(value = "/assignments/{assignmentId}")
+    public ResponseEntity<Map<String, Object>> getAssignmentGrades(@PathVariable Integer assignmentId) {
+        Map<String, Object> assignmentGrades = trackPerformanceService.getAssignmentGrades(assignmentId);
+        return ResponseEntity.ok(assignmentGrades);
+    }
 
+    // Request class for tracking performance
     public static class PerformanceRequest {
         private List<String> courseNames;
         private String lessonName;
