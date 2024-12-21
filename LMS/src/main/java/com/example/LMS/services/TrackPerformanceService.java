@@ -84,7 +84,14 @@ public class TrackPerformanceService {
                 studentDetails.put("grade", assignment.getGrades());
                 studentDetails.put("feedback", assignment.getFeedback());
                 studentDetails.put("date", new Date().toString()); // Replace with actual submission date if available
-
+                List<CourseModel> courses = courseRepository.findByStudentId(Long.valueOf(student.getId())); // Ensure Long type
+                if (!courses.isEmpty()) {
+                    // Assuming the first course is the one to include; modify as necessary for your use case
+                    studentDetails.put("courseId", courses.get(0).getId());  // Add the course ID to the student details
+                } else {
+                    // Handle case when no courses are found for the student
+                    studentDetails.put("courseId", "No course found");
+                }
                 studentsGrades.add(studentDetails);
             }
 
