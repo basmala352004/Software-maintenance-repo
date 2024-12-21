@@ -32,4 +32,9 @@ public class LessonController {
         List<LessonModel> lessons = lessonService.displayLessons();
         return ResponseEntity.ok(lessons);
     }
+
+    @PostMapping("/generateOTP")
+    public void generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
+        lessonService.generateOTP(OTP, lessonId);
+    }
 }

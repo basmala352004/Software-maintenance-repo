@@ -21,4 +21,9 @@ public class LessonService {
     public List<LessonModel> displayLessons() {
         return lessonRepository.findAll();
     }
+
+    public void generateOTP(String OTP, long lessonId) {
+        LessonModel lesson = lessonRepository.findById(lessonId).get();
+        lesson.setOTP(OTP);
+    }
 }
