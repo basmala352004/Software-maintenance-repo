@@ -65,4 +65,15 @@ public class CourseService {
             courseRepository.save(course);
         }
     }
+
+    public void updateCourseDetails(Long courseId, CourseModel updatedCourse) {
+        CourseModel existingCourse = courseRepository.findById(courseId).orElse(null);
+        if (existingCourse != null) {
+            existingCourse.setTitle(updatedCourse.getTitle());
+            existingCourse.setDescription(updatedCourse.getDescription());
+            existingCourse.setDurationHours(updatedCourse.getDurationHours());
+            courseRepository.save(existingCourse);
+        }
+    }
+
 }
