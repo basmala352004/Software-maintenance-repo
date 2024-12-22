@@ -38,8 +38,8 @@ public class CourseServiceTest {
     @BeforeEach
     void setUp() {
         // Initialize students and lessons
-        StudentModel student1 = new StudentModel("student1@example.com", "John Doe");
-        StudentModel student2 = new StudentModel("student2@example.com", "Jane Smith");
+        StudentModel student1 = new StudentModel("student1@gmail.com", "John Doe");
+        StudentModel student2 = new StudentModel("student2@gmail.com", "Jane Smith");
 
         // Create a CourseModel and LessonModel for testing
         course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 40, null, null);
