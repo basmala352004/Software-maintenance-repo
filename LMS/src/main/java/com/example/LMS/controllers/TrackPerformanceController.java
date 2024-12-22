@@ -31,6 +31,12 @@ public class TrackPerformanceController {
         return ResponseEntity.ok(assignmentGrades);
     }
 
+    @GetMapping(value = "/quizes/{QuizId}")
+    public ResponseEntity<Map<String, Object>> getQuizGrades(@PathVariable long QuizId) {
+        Map<String, Object> quizGrades = trackPerformanceService.getQuizGrades(QuizId);
+        return ResponseEntity.ok(quizGrades);
+    }
+
     // Request class for tracking performance
     public static class PerformanceRequest {
         private List<String> courseNames;
