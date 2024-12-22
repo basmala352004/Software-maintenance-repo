@@ -20,6 +20,8 @@ public class TrackPerformanceService {
     private StudentRepository studentRepository;
     @Autowired
     private AssignmentRepository assignmentRepository;
+    @Autowired
+    private QuizRepository quizRepository;
 
     // Fetch performance for courses based on attendance
     public List<Map<String, Object>> getPerformanceForCourses(List<String> courseNames, String lessonName) {
@@ -100,5 +102,47 @@ public class TrackPerformanceService {
         }
 
         throw new NoSuchElementException("Assignment not found with ID: " + assignmentId);
+    }
+
+    // Fetch quiz grades and feedback
+    public Map<String, Object> getQuizGrades(long quizId) {
+        Optional<QuizModel> quizOpt = quizRepository.findById(quizId);
+
+        if (quizOpt.isPresent()) {
+            QuizModel quiz = quizOpt.get();
+
+            // Create the response map
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("quizId", quiz.getId());
+            result.put("quizTitle", quiz.getQuizTitle());
+
+            // Fetching students who took the quiz
+            List<StudentModel> students = studentRepository.findAll(); // Adjust if there's a direct relation with Quiz
+            List<Map<String, Object>> studentsGrades = new ArrayList<>();
+
+            for (StudentModel student : students) {
+                Map<String, Object> studentDetails = new HashMap<>();
+                studentDetails.put("studentId", student.getId());
+                studentDetails.put("studentName", student.getName());
+                studentDetails.put("grade", quiz.getGrade());
+                // studentDetails.put("feedback", quiz.getfeedback());
+                studentDetails.put("date", new Date().toString()); // Replace with actual submission date if available
+
+                List<CourseModel> courses = courseRepository.findByStudentId(Long.valueOf(student.getId())); // Ensure Long type
+                if (!courses.isEmpty()) {
+                    // Assuming the first course is the one to include; modify as necessary
+                    studentDetails.put("courseId", courses.get(0).getId());
+                } else {
+                    // Handle case when no courses are found for the student
+                    studentDetails.put("courseId", "No course found");
+                }
+                studentsGrades.add(studentDetails);
+            }
+
+            result.put("students", studentsGrades);
+            return result;
+        }
+
+        throw new NoSuchElementException("Quiz not found with ID: " + quizId);
     }
 }
