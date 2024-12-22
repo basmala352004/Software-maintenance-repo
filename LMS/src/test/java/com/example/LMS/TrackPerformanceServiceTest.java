@@ -34,6 +34,12 @@ class TrackPerformanceServiceTest {
     @Mock
     private AssignmentRepository assignmentRepository;
 
+    @Mock
+    private QuizRepository quizRepository;
+
+    @InjectMocks
+    private QuizService quizService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -107,5 +113,56 @@ class TrackPerformanceServiceTest {
         );
 
         assertEquals("Assignment not found with ID: 1", exception.getMessage());
+    }
+
+    @Test
+    void testGetQuizGrades() {
+        long quizId = 1L;
+
+        QuizModel mockQuiz = new QuizModel();
+        mockQuiz.setId(quizId);
+        mockQuiz.setQuizTitle("Quiz 1");
+        mockQuiz.setGrade(90);
+
+        StudentModel mockStudent = new StudentModel();
+        mockStudent.setId(1);
+        mockStudent.setName("John Doe");
+
+        CourseModel mockCourse = new CourseModel();
+        mockCourse.setId(101L);
+
+        when(quizRepository.findById(quizId)).thenReturn(Optional.of(mockQuiz));
+        when(studentRepository.findAll()).thenReturn(Collections.singletonList(mockStudent));
+        when(courseRepository.findByStudentId(1L)).thenReturn(Collections.singletonList(mockCourse));
+
+        Map<String, Object> result = trackPerformanceService.getQuizGrades(quizId);
+
+        assertNotNull(result);
+        assertEquals(quizId, result.get("quizId"));
+        assertEquals("Quiz 1", result.get("quizTitle"));
+        assertNotNull(result.get("students"));
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> students = (List<Map<String, Object>>) result.get("students");
+        assertEquals(1, students.size());
+
+        Map<String, Object> studentDetails = students.get(0);
+        assertEquals(1, studentDetails.get("studentId"));
+        assertEquals("John Doe", studentDetails.get("studentName"));
+        assertEquals(90.0, studentDetails.get("grade"));
+        assertEquals(101L, studentDetails.get("courseId"));
+    }
+
+    @Test
+    void testGetQuizGrades_QuizNotFound() {
+        long quizId = 1L;
+
+        when(quizRepository.findById(quizId)).thenReturn(Optional.empty());
+
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
+                trackPerformanceService.getQuizGrades(quizId)
+        );
+
+        assertEquals("Quiz not found with ID: " + quizId, exception.getMessage());
     }
 }
