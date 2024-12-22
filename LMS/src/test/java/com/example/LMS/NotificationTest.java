@@ -32,7 +32,6 @@ public class NotificationTest {
         MockitoAnnotations.openMocks(this);  // Initialize mocks
         notification = new NotificationModel();
         notification.setNotificationID(1);
-        notification.setUserID(1);
         notification.setMessage("Test notification");
         notification.setIsRead(false);
     }
@@ -40,7 +39,7 @@ public class NotificationTest {
     @Test
     void testFetchUnreadNotifications() {
         // Mock the repository method
-        when(notificationRepository.findByUserIDAndIsReadFalse(1)).thenReturn(Arrays.asList(notification));
+        when(notificationRepository.findByUserIdAndIsReadFalse(1)).thenReturn(Arrays.asList(notification));
 
         // Call the service method
         List<NotificationModel> unreadNotifications = notificationService.fetchUnreadNotifications(1);
@@ -51,13 +50,13 @@ public class NotificationTest {
         assertEquals("Test notification", unreadNotifications.get(0).getMessage());
 
         // Verify repository interaction
-        verify(notificationRepository, times(1)).findByUserIDAndIsReadFalse(1);
+        verify(notificationRepository, times(1)).findByUserIdAndIsReadFalse(1);
     }
 
     @Test
     void testFetchAllNotifications() {
         // Mock the repository method
-        when(notificationRepository.findByUserID(1)).thenReturn(Arrays.asList(notification));
+        when(notificationRepository.findByUserId(1)).thenReturn(Arrays.asList(notification));
 
         // Call the service method
         List<NotificationModel> allNotifications = notificationService.fetchAllNotifications(1);
@@ -68,7 +67,7 @@ public class NotificationTest {
         assertEquals("Test notification", allNotifications.get(0).getMessage());
 
         // Verify repository interaction
-        verify(notificationRepository, times(1)).findByUserID(1);
+        verify(notificationRepository, times(1)).findByUserId(1);
     }
 
     @Test

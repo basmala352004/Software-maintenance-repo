@@ -16,7 +16,6 @@ public class LessonModel {
     @CollectionTable(name = "lesson_topics", joinColumns = @JoinColumn(name = "lesson_id"))
     @Column(name = "topic")
     private List<String> topics;
-
     private String description;
     private String teacherName;
     private LocalDateTime startDate;

@@ -1,6 +1,7 @@
 package com.example.LMS.controllers;
 
 import com.example.LMS.models.LessonModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.services.CourseService;
 import com.example.LMS.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class LessonController {
     }
 
     @PostMapping("/generateOTP")
-    public void generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
-        lessonService.generateOTP(OTP, lessonId);
+    public ResponseEntity<String> generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
+        return ResponseEntity.ok(lessonService.generateOTP(OTP, lessonId));
     }
 }

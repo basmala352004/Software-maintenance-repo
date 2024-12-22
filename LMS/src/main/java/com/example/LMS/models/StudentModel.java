@@ -41,4 +41,6 @@ public class StudentModel extends User {
     public void setCourses(List<CourseModel> courses) {
         this.courses = courses;
     }
+
+
 }

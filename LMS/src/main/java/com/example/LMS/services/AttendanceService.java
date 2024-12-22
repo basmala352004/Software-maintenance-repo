@@ -50,12 +50,18 @@ public class AttendanceService {
             returnMessage = "OTP is not correct.";
         }
         else {
-            boolean isAttended = true;
-            isAttended = true;
-            AttendanceModel attendance = new AttendanceModel(lesson, student, isAttended, currentTime);
-            attendanceRepository.save(attendance);
-            returnMessage = "You are successfully attend.";
+            List<CourseModel> courses = student.getCourses();
+            if (courses.contains(lesson.getCourseModel())) {
+                boolean isAttended = true;
+                AttendanceModel attendance = new AttendanceModel(lesson, student, isAttended, currentTime);
+                attendanceRepository.save(attendance);
+                returnMessage = "You are successfully attend.";
+            }
+            else {
+                returnMessage = "You are not enrolled in the course!";
+            }
         }
         return returnMessage;
+
     }
 }

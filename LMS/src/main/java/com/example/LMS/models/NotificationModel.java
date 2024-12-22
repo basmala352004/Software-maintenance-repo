@@ -1,7 +1,6 @@
 package com.example.LMS.models;
-
 import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -9,36 +8,36 @@ public class NotificationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer notificationID;
-    private Integer userID;
-    // Many-to-One relationship with StudentModel
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private StudentModel student;
-
+    private User user;
     private String type;
+    @org.jetbrains.annotations.NotNull
     private String message;
-    private Date timestamp;
+    private LocalDateTime timestamp;
     private Boolean isRead;
+
     public NotificationModel() {}
-    public NotificationModel(Integer userID, String type, String message, Date timestamp, Boolean isRead) {
-        this.userID = userID;
+    public NotificationModel(User user, String type, String message, LocalDateTime timestamp) {
+        this.user = user;
         this.type = type;
         this.message = message;
-        this.timestamp = timestamp;
-        this.isRead = isRead;
+        this.timestamp = (timestamp != null) ? timestamp : LocalDateTime.now();
+        this.isRead = false;
     }
+
+    // Getters and Setters
     public Integer getNotificationID() {
         return notificationID;
     }
     public void setNotificationID(Integer notificationID) {
-
         this.notificationID = notificationID;
     }
-    public Integer getUserID() {
-        return userID;
+    public User getStudent() {
+        return user;
     }
-    public void setUserID(Integer userID) {
-        this.userID = userID;
+    public void setStudent(StudentModel student) {
+        this.user = user;
     }
     public String getType() {
         return type;
@@ -52,10 +51,10 @@ public class NotificationModel {
     public void setMessage(String message) {
         this.message = message;
     }
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
     public Boolean getIsRead() {
