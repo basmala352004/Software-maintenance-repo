@@ -65,7 +65,9 @@ public class QuizService {
         }
         return null;
     }
-
+    public  QuizModel submitQuiz(QuizModel quiz) {
+        return quizRepository.save(quiz);
+    }
     // Fetch quiz by ID, returning Optional to handle quiz not found case
     public Optional<QuizModel> getQuizById(Long quizId) {
         return quizRepository.findById(quizId);

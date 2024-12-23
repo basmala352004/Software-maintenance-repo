@@ -58,4 +58,9 @@ public class QuizController {
     {
         return ResponseEntity.ok(quizService.gradeQuiz(quizId, grade));
     }
+    @PostMapping("/submit")
+    public ResponseEntity<QuizModel> submitQuiz(@RequestBody QuizModel quiz) {
+        QuizModel submittedQuiz = quizService.submitQuiz(quiz);
+        return ResponseEntity.ok(submittedQuiz);
+    }
 }

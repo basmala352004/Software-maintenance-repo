@@ -1,13 +1,11 @@
 package com.example.LMS.controllers;
 
-import com.example.LMS.models.CourseModel;
-import com.example.LMS.models.LessonModel;
+import com.example.LMS.models.*;
 
-import com.example.LMS.services.CourseService;
-import com.example.LMS.services.LessonService;
-import com.example.LMS.services.UserService;
+import com.example.LMS.services.*;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-
+import java.util.Optional;
 
 
 @RestController
@@ -28,7 +25,8 @@ public class InstructorController
     @Autowired
     private CourseService courseService;
     private LessonService lessonService;
-
+    private QuizService quizService;
+    private AssignmentService assignmentService;
     private static final String UPLOAD_DIRECTORY = "C:/uploads/";
 
 
@@ -91,7 +89,53 @@ public class InstructorController
         }
 
     }
+    //quizses and assignments
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/createQuiz")
 
+    public ResponseEntity<String> createQuiz(@RequestBody QuizModel quiz) {
+        quizService.createQuiz(quiz);
+        return ResponseEntity.ok("Quiz created successfully");
+    }
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/{quizId}/addQuestion")
+    public ResponseEntity<String> addQuestion(@PathVariable Long quizId, @RequestBody QuestionModel question) {
+        Optional<QuizModel> quiz = quizService.getQuizById(quizId);
+
+        if (quiz.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Quiz with ID " + quizId + " not found.");
+        }
+
+        quizService.addQuestionToQuiz(quizId, question);
+        return ResponseEntity.ok("Question added to quiz");
+    }
+
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/{quizId}/grade")
+    public ResponseEntity<QuizModel> gradeQuiz(
+            @PathVariable long quizId,
+            @RequestParam double grade,
+            @RequestParam String feedback)
+    {
+        return ResponseEntity.ok(quizService.gradeQuiz(quizId, grade));
+    }
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/createAssignment")
+    public ResponseEntity<String> createAssignment(@RequestBody Assignment assignment) {
+        assignmentService.createAssignment(assignment);
+        return ResponseEntity.ok("Assignment created successfully");
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/{assignmentId}/grade")
+    public ResponseEntity<Assignment> gradeAssignment(
+            @PathVariable Integer assignmentId,
+            @RequestParam double grade,
+            @RequestParam String feedback) {
+        return ResponseEntity.ok(assignmentService.gradeAssignment(assignmentId, grade, feedback));
+    }
 
 
 
