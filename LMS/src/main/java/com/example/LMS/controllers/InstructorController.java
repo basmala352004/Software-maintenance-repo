@@ -223,6 +223,16 @@ public class InstructorController
     public ResponseEntity<String> generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
         return ResponseEntity.ok(lessonService.generateOTP(OTP, lessonId));
     }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @GetMapping("/{courseId}/students")
+    public ResponseEntity<List<StudentModel>> getEnrolledStudents(@PathVariable Long courseId) {
+        List<StudentModel> students = courseService.getStudentsByCourseId(courseId);
+        if (students.isEmpty()) {
+            return ResponseEntity.status(404).body(null); // Return 404 if no students are enrolled
+        }
+        return ResponseEntity.ok(students); // Return the list of students enrolled in the course
+    }
+
 
 
 }

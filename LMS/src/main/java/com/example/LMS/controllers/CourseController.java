@@ -2,6 +2,7 @@ package com.example.LMS.controllers;
 
 import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.models.CourseModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -81,5 +82,15 @@ public class CourseController {
         courseService.updateCourseDetails(courseId, updatedCourse);
         return ResponseEntity.ok("Course updated successfully");
     }
+
+    @GetMapping("/{courseId}/students")
+    public ResponseEntity<List<StudentModel>> getEnrolledStudents(@PathVariable Long courseId) {
+        List<StudentModel> students = courseService.getStudentsByCourseId(courseId);
+        if (students.isEmpty()) {
+            return ResponseEntity.status(404).body(null); // Return 404 if no students are enrolled
+        }
+        return ResponseEntity.ok(students); // Return the list of students enrolled in the course
+    }
+
 
 }

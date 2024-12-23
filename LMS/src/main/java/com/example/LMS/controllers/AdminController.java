@@ -1,8 +1,10 @@
 package com.example.LMS.controllers;
 
 import com.example.LMS.models.NotificationModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.models.User;
 import com.example.LMS.repositories.UserRepository;
+import com.example.LMS.services.CourseService;
 import com.example.LMS.services.NotificationService;
 import com.example.LMS.services.UserService;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
@@ -12,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,6 +27,8 @@ public class AdminController {
     @Autowired
     private UserService userService;
     private NotificationService notificationService;
+    private CourseService courseService;
+
     UserRepository userRepository;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -61,4 +66,14 @@ public class AdminController {
 
         return "Notification sent successfully!";
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/{courseId}/students")
+    public ResponseEntity<List<StudentModel>> getEnrolledStudents(@PathVariable Long courseId) {
+        List<StudentModel> students = courseService.getStudentsByCourseId(courseId);
+        if (students.isEmpty()) {
+            return ResponseEntity.status(404).body(null); // Return 404 if no students are enrolled
+        }
+        return ResponseEntity.ok(students); // Return the list of students enrolled in the course
+    }
+
 }

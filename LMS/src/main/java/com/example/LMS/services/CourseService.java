@@ -3,10 +3,12 @@ package com.example.LMS.services;
 import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.LessonModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,5 +77,13 @@ public class CourseService {
             courseRepository.save(existingCourse);
         }
     }
+    public List<StudentModel> getStudentsByCourseId(Long courseId) {
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getStudents(); // Return the list of students enrolled in the course
+        }
+        return new ArrayList<>(); // Return an empty list if the course is not found
+    }
+
 
 }
