@@ -1,7 +1,9 @@
 package com.example.LMS.services;
 
 import com.example.LMS.models.AuthentictationResponse;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.models.User;
+import com.example.LMS.repositories.StudentRepository;
 import com.example.LMS.repositories.UserRepository;
 import com.example.LMS.SpringSecurity.jwtService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
     private final jwtService jwtService;
 
@@ -31,7 +35,12 @@ public class UserService {
         }
         // Encrypt the password and save the user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        if(Objects.equals(user.getRole(), "ROLE_STUDENT")){
+            StudentModel student = new StudentModel(user.getName(),  user.getRole(), user.getPassword(),user.getEmail());
+            studentRepository.save(student);
+        }
+        else
+            userRepository.save(user);
 
         // Generate JWT token after saving the user
         String jwtToken = jwtService.generateToken(user);
