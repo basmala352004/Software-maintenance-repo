@@ -84,6 +84,15 @@ public class CourseService {
         }
         return new ArrayList<>(); // Return an empty list if the course is not found
     }
+    //access media files
+    public List<String> getMediaFilesByCourseId(Long courseId) {
+        CourseModel course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getMediaFiles(); // Return the list of media files
+        }
+        return new ArrayList<>(); // Return an empty list if the course is not found
+    }
+
 
 
 }

@@ -121,4 +121,15 @@ public class StudentController
 
         return "Notification sent successfully!";
     }
+
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @GetMapping("/{courseId}/materials")
+    public ResponseEntity<List<String>> getCourseMaterials(@PathVariable Long courseId) {
+        List<String> mediaFiles = courseService.getMediaFilesByCourseId(courseId);
+        if (mediaFiles.isEmpty()) {
+            return ResponseEntity.status(404).body(null); // Return 404 if no materials are found
+        }
+        return ResponseEntity.ok(mediaFiles); // Return the list of media files for the course
+    }
+
 }
