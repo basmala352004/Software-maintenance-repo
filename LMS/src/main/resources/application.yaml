@@ -14,3 +14,15 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   application:
     name: LMS
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: emyelnassag@gmail.com
+    password: ysnc cqbl uqcp csrf
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+    default-encoding: UTF-8
+
+

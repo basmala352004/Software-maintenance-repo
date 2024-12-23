@@ -3,6 +3,8 @@ package com.example.LMS.services;
 import com.example.LMS.models.NotificationModel;
 import com.example.LMS.repositories.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,9 @@ public class NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+// for bouns
+    @Autowired
+    private JavaMailSender mailSender;
 
     // Fetch unread notifications for a specific user
     public List<NotificationModel> fetchUnreadNotifications(Integer userId) {
@@ -36,4 +41,15 @@ public class NotificationService {
             notificationRepository.save(notification);  // Save the updated notification to the database
         }
     }
+
+    // Bouns
+// Send email notification
+    public void sendEmailNotification(String recipientEmail, String subject, String message) {
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo(recipientEmail);
+        email.setSubject(subject);
+        email.setText(message);
+        mailSender.send(email);
+    }
+
 }

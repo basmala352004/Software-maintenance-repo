@@ -60,9 +60,9 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("mail is required.");
         }
-        if (!user.getEmail().contains("@gmail.com")) {
+        if (!user.getEmail().contains("@")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("mail must include @gmail.com.");
+                    .body("mail must include @.");
         }
         Optional<User> existingUser = userRepository.findByNameAndEmail(user.getName(), user.getEmail());
         if (existingUser.isPresent()) {

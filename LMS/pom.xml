@@ -94,6 +94,11 @@
             <version>26.0.1</version>
             <scope>compile</scope>
         </dependency>
+<!--		// for email notification-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 
 
     </dependencies>
