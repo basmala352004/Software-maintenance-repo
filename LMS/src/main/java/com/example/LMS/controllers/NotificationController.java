@@ -1,8 +1,8 @@
 package com.example.LMS.controllers;
 import com.example.LMS.models.NotificationModel;
 import com.example.LMS.models.User;
-import com.example.LMS.services.NotificationService;
 import com.example.LMS.repositories.UserRepository;
+import com.example.LMS.services.NotificationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

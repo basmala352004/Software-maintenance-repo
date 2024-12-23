@@ -1,48 +1,28 @@
 package com.example.LMS.controllers;
 
-import com.example.LMS.models.Profile;
+import com.example.LMS.models.AuthentictationResponse;
 import com.example.LMS.models.User;
-import com.example.LMS.models.loginData;
 import com.example.LMS.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-
+    // Register a new user with role-based access
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody User user) {
-
-        return userService.register(user);
+    public ResponseEntity<AuthentictationResponse> register(@RequestBody User user) {
+        return ResponseEntity.ok(userService.register(user)); // Register method in service
     }
 
-
+    // Login and get JWT token
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody loginData loginData) {
-        return userService.login(loginData);
-    }
-
-
-    @GetMapping("/users")
-    public ResponseEntity<Object> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-
-    @PostMapping("/editprofile")
-    public ResponseEntity<Object> editProfile(@RequestBody Profile userProfile) {
-        return userService.editProfile(userProfile);
-    }
-
-
-    @GetMapping("/showprofile/{userId}")
-    public ResponseEntity<Object> viewProfile(@PathVariable Integer userId) {
-        return userService.ViewProfile(userId);
+    public ResponseEntity<AuthentictationResponse> login(@RequestBody User user) {
+        return ResponseEntity.ok(userService.login(user)); // Login method in service
     }
 }
