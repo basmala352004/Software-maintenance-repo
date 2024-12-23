@@ -27,8 +27,8 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Only admins can access /admin routes
 
 
-                        .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
-                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/instructor/**").hasAuthority("ROLE_INSTRUCTOR")
+                        .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT")
                         .anyRequest().authenticated() // Any other requests need authentication
                 )
                 .sessionManagement(session -> session

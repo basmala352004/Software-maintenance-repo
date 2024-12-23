@@ -26,6 +26,7 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
+        if (user.getName()==)
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole(User.ROLE_STUDENT);  // Default to STUDENT role
         }
