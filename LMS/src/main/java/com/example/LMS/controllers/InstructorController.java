@@ -33,6 +33,9 @@ public class InstructorController
     UserRepository userRepository;
 
     private static final String UPLOAD_DIRECTORY = "C:/uploads/";
+    @Autowired
+    private TrackPerformanceService TrackPerformanceService; // Inject the TrackPerformanceService
+
 
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
@@ -193,6 +196,27 @@ public class InstructorController
         notificationService.sendEmailNotification(user.getEmail(), subject, emailMessage);
 
         return "Notification sent successfully!";
+    }
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PostMapping("/trackPerformance")
+    public ResponseEntity<List<Map<String, Object>>> trackPerformance(@RequestBody TrackPerformanceController.PerformanceRequest request) {
+        List<Map<String, Object>> performanceDetails = TrackPerformanceService.getPerformanceForCourses(
+                request.getCourseNames(), request.getLessonName());
+        return ResponseEntity.ok(performanceDetails);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/assignments/{assignmentId}/grades")
+    public ResponseEntity<Map<String, Object>> getAssignmentGrades(@PathVariable Integer assignmentId) {
+        Map<String, Object> assignmentGrades = TrackPerformanceService.getAssignmentGrades(assignmentId);
+        return ResponseEntity.ok(assignmentGrades);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/quizes/{quizId}/grades")
+    public ResponseEntity<Map<String, Object>> getQuizGrades(@PathVariable long quizId) {
+        Map<String, Object> quizGrades = TrackPerformanceService.getQuizGrades(quizId);
+        return ResponseEntity.ok(quizGrades);
     }
 
 
