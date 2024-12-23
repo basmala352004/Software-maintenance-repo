@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -27,6 +29,8 @@ public class InstructorController
     private LessonService lessonService;
     private QuizService quizService;
     private AssignmentService assignmentService;
+    private AttendanceService attendanceService;
+
     private static final String UPLOAD_DIRECTORY = "C:/uploads/";
 
 
@@ -136,7 +140,30 @@ public class InstructorController
             @RequestParam String feedback) {
         return ResponseEntity.ok(assignmentService.gradeAssignment(assignmentId, grade, feedback));
     }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @GetMapping("/display-all-attendance")
+    public ResponseEntity<List<AttendanceModel>> displayAllAttendance() {
+        return ResponseEntity.ok(attendanceService.displayAllAttendance());
+    }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @PostMapping("/display-lesson-attendance")
+    public ResponseEntity<List<AttendanceModel>> displayLessonAttendance(@RequestParam long lessonId) {
+        return ResponseEntity.ok(attendanceService.displayLessonAttendance(lessonId));
+    }
 
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @GetMapping("/{quizId}/randomQuestions")
+    public ResponseEntity<List<QuestionModel>> getRandomQuestions(@PathVariable Long quizId, @RequestParam int numberOfQuestions) {
+        Optional<QuizModel> quiz = quizService.getQuizById(quizId);
+
+        if (quiz.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+
+        List<QuestionModel> questions = quizService.getRandomQuestions(quizId, numberOfQuestions);
+        return ResponseEntity.ok(questions);
+    }
 
 
 }

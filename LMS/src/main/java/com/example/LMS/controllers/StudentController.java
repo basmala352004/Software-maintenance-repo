@@ -1,14 +1,12 @@
 package com.example.LMS.controllers;
 
+import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.DTOs.StudentDTO;
 import com.example.LMS.models.Assignment;
 import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.QuizModel;
 import com.example.LMS.models.StudentModel;
-import com.example.LMS.services.AssignmentService;
-import com.example.LMS.services.QuizService;
-import com.example.LMS.services.StudentService;
-import com.example.LMS.services.TrackPerformanceService;
+import com.example.LMS.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +21,10 @@ import java.util.Map;
 public class StudentController
 {
     final StudentService studentService;
+    private CourseService courseService;
+    private AttendanceService attendanceService;
+
+
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
@@ -75,5 +77,16 @@ public class StudentController
     public ResponseEntity<QuizModel> submitQuiz(@RequestBody QuizModel quiz) {
         QuizModel submittedQuiz = quizService.submitQuiz(quiz);
         return ResponseEntity.ok(submittedQuiz);
+    }
+    @PreAuthorize("hasRole('STUDENT')")
+    @GetMapping("/displayCourses")
+    public ResponseEntity<List<CourseDTO>> displayCourses() {
+        List<CourseDTO> courses = courseService.displayCourses();
+        return ResponseEntity.ok(courses);
+    }
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PostMapping("/attend-lesson")
+    public ResponseEntity<String> attendLesson(@RequestParam int studentId, @RequestParam Long lessonId, @RequestParam String OTP) {
+        return ResponseEntity.ok(attendanceService.attendLesson(studentId, lessonId, OTP));
     }
 }
