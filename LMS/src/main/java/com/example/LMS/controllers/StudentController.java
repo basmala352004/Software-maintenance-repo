@@ -2,10 +2,8 @@ package com.example.LMS.controllers;
 
 import com.example.LMS.DTOs.CourseDTO;
 import com.example.LMS.DTOs.StudentDTO;
-import com.example.LMS.models.Assignment;
-import com.example.LMS.models.CourseModel;
-import com.example.LMS.models.QuizModel;
-import com.example.LMS.models.StudentModel;
+import com.example.LMS.models.*;
+import com.example.LMS.repositories.UserRepository;
 import com.example.LMS.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
@@ -13,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +22,10 @@ public class StudentController
     final StudentService studentService;
     private CourseService courseService;
     private AttendanceService attendanceService;
+    private NotificationService notificationService;
+    UserRepository userRepository;
+
+
 
 
     public StudentController(StudentService studentService) {
@@ -88,5 +91,34 @@ public class StudentController
     @PostMapping("/attend-lesson")
     public ResponseEntity<String> attendLesson(@RequestParam int studentId, @RequestParam Long lessonId, @RequestParam String OTP) {
         return ResponseEntity.ok(attendanceService.attendLesson(studentId, lessonId, OTP));
+    }
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PostMapping("/sendByEmail")
+    public String sendNotificationByEmail(@RequestBody Map<String, Object> payload) {
+        // Extract values from payload
+        Integer userId = (Integer) payload.get("userId");
+        String type = (String) payload.get("type");
+        String message = (String) payload.get("message");
+        String timestampStr = (String) payload.get("timestamp");
+        LocalDateTime timestamp = timestampStr != null ? LocalDateTime.parse(timestampStr) : LocalDateTime.now();
+
+        // Find the user by ID
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Create a new notification object
+        NotificationModel notification = new NotificationModel(user, type, message, timestamp);
+
+        // Save notification to the database
+        notificationService.sendNotification(notification);
+
+        // Send email notification
+        // Prepare the subject and message for the email
+        String subject = "Notification: " + type; // You can customize the subject as needed
+        String emailMessage = "You have a new notification:\n" + message; // Customize the email message
+
+        // Send email using the service
+        notificationService.sendEmailNotification(user.getEmail(), subject, emailMessage);
+
+        return "Notification sent successfully!";
     }
 }
