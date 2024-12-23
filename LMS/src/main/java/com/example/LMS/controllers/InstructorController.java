@@ -194,11 +194,6 @@ public class InstructorController
 
         return "Notification sent successfully!";
     }
-    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
-    @PostMapping("/generateOTP")
-    public ResponseEntity<String> generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
-        return ResponseEntity.ok(lessonService.generateOTP(OTP, lessonId));
-    }
 
 
 }
