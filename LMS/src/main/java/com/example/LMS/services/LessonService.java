@@ -5,6 +5,7 @@ import com.example.LMS.repositories.LessonRepository;
 import com.example.LMS.repositories.NotificationRepository;
 import com.example.LMS.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

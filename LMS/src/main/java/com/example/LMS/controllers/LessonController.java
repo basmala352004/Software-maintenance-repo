@@ -6,6 +6,7 @@ import com.example.LMS.services.CourseService;
 import com.example.LMS.services.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class LessonController {
         List<LessonModel> lessons = lessonService.displayLessons();
         return ResponseEntity.ok(lessons);
     }
-
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
     @PostMapping("/generateOTP")
     public ResponseEntity<String> generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
         return ResponseEntity.ok(lessonService.generateOTP(OTP, lessonId));
