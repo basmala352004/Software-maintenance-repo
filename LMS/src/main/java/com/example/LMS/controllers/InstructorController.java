@@ -30,6 +30,8 @@ public class InstructorController
     private AssignmentService assignmentService;
     private AttendanceService attendanceService;
     private NotificationService notificationService;
+    private TrackPerformanceService trackPerformanceService;
+
     UserRepository userRepository;
 
     private static final String UPLOAD_DIRECTORY = "C:/uploads/";
@@ -193,6 +195,33 @@ public class InstructorController
         notificationService.sendEmailNotification(user.getEmail(), subject, emailMessage);
 
         return "Notification sent successfully!";
+    }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @PostMapping(value = "/track/getPerformanceForCourses")
+    public ResponseEntity<List<Map<String, Object>>> getPerformanceForCourses(
+            @RequestBody TrackPerformanceController.PerformanceRequest request) {
+        List<Map<String, Object>> performanceDetails = trackPerformanceService.getPerformanceForCourses(
+                request.getCourseNames(), request.getLessonName());
+        return ResponseEntity.ok(performanceDetails);
+    }
+
+    // Endpoint for fetching assignment grades and feedback
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @GetMapping(value = "/getAssignmentGrades/{assignmentId}")
+    public ResponseEntity<Map<String, Object>> getAssignmentGrades(@PathVariable Integer assignmentId) {
+        Map<String, Object> assignmentGrades = trackPerformanceService.getAssignmentGrades(assignmentId);
+        return ResponseEntity.ok(assignmentGrades);
+    }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @GetMapping(value = "/getQuizGrades/{QuizId}")
+    public ResponseEntity<Map<String, Object>> getQuizGrades(@PathVariable long QuizId) {
+        Map<String, Object> quizGrades = trackPerformanceService.getQuizGrades(QuizId);
+        return ResponseEntity.ok(quizGrades);
+    }
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    @PostMapping("/generateOTP")
+    public ResponseEntity<String> generateOTP(@RequestParam String OTP, @RequestParam long lessonId) {
+        return ResponseEntity.ok(lessonService.generateOTP(OTP, lessonId));
     }
 
 
