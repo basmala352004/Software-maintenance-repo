@@ -117,4 +117,24 @@ public class CourseServiceTest {
         assertEquals(1, course.getMediaFiles().size());  // Verify that the media file was added
         assertEquals("C:/uploads/lesson1.mp4", course.getMediaFiles().get(0));
     }
+
+    @Test
+    void testUpdateCourseDetails() {
+        // Mock findById to return a course
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+
+        // Updated course details
+        CourseModel updatedCourse = new CourseModel();
+        updatedCourse.setTitle("Updated Title");
+        updatedCourse.setDescription("Updated Description");
+        updatedCourse.setDurationHours(50);
+
+        courseService.updateCourseDetails(1L, updatedCourse); // Call the service method
+
+        // Verify the updates
+        assertEquals("Updated Title", course.getTitle());
+        assertEquals("Updated Description", course.getDescription());
+        assertEquals(50, course.getDurationHours());
+        verify(courseRepository, times(1)).save(course); // Verify save method is called
+    }
 }
