@@ -1,8 +1,12 @@
 package com.example.LMS;
 
+import com.example.LMS.models.CourseModel;
 import com.example.LMS.models.LessonModel;
+import com.example.LMS.models.NotificationModel;
+import com.example.LMS.models.StudentModel;
 import com.example.LMS.repositories.LessonRepository;
 import com.example.LMS.services.LessonService;
+import com.example.LMS.services.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +32,30 @@ public class LessonServiceTest {
 
     private LessonModel lesson;
 
+
+    @Mock
+    private NotificationService notificationService;
+
+
+    private LessonModel lesson2;
+    private CourseModel course;
+    private StudentModel student1;
+    private StudentModel student2;
+
     @BeforeEach
     void setUp() {
+        // Create students
+        student1 = new StudentModel("John Doe", "password1");
+        student2 = new StudentModel("Jane Smith", "password2");
+
+        // Create course and add students
+        course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 4, null, null);
+        course.setStudents(Arrays.asList(student1, student2));
         // Create a LessonModel for testing with a valid startDate
         lesson = new LessonModel("Lesson 1", Arrays.asList("Topic 1", "Topic 2"), "Lesson Description", "Dr. John",
                 LocalDateTime.of(2024, 12, 19, 10, 0), 60, "1234");
+        lesson.setCourseModel(course);
+        lesson.setId(1L);
     }
 
     @Test
@@ -55,5 +78,33 @@ public class LessonServiceTest {
         assertNotNull(lessons);
         assertEquals(1, lessons.size());
         assertEquals("Lesson 1", lessons.get(0).getTitle());
+    }
+
+
+    @Test
+    void testGenerateOTP() {
+        // Mock findById to return the lesson
+        when(lessonRepository.findById(lesson.getId())).thenReturn(java.util.Optional.of(lesson));
+
+        // Mock save to return the lesson after OTP is set
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+
+        // Mock notification service to simulate sending notifications
+        doNothing().when(notificationService).sendNotification(any(NotificationModel.class));
+
+        // Call the service method to generate OTP
+        String result = lessonService.generateOTP("123456", lesson.getId());
+
+        // Verify that OTP is set
+        assertEquals("123456", lesson.getOTP());
+
+        // Verify that the lesson repository's save method is called once
+        verify(lessonRepository, times(1)).save(lesson);
+
+        // Verify that the notification service's sendNotification method is called twice (once for each student)
+        verify(notificationService, times(2)).sendNotification(any(NotificationModel.class));
+
+        // Check the result message
+        assertEquals("OTP generated succeffully and notification has sent to students.", result);
     }
 }

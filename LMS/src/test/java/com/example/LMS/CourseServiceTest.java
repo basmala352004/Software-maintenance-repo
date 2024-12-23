@@ -38,11 +38,11 @@ public class CourseServiceTest {
     @BeforeEach
     void setUp() {
         // Initialize students and lessons
-        StudentModel student1 = new StudentModel("student1@gmail.com", "John Doe");
-        StudentModel student2 = new StudentModel("student2@gmail.com", "Jane Smith");
+        StudentModel student1 = new StudentModel("John Doe", "pass1");
+        StudentModel student2 = new StudentModel("Jane Smith", "pass2");
 
         // Create a CourseModel and LessonModel for testing
-        course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 40, null, null);
+        course = new CourseModel("CS101", "Computer Science 101", "Intro to CS", 4, null, null);
         course.setStudents(Arrays.asList(student1, student2));  // Adding students to the course
         course.setListLessons(new ArrayList<>());  // Initialize the lessons list
 
@@ -137,4 +137,37 @@ public class CourseServiceTest {
         assertEquals(50, course.getDurationHours());
         verify(courseRepository, times(1)).save(course); // Verify save method is called
     }
+    @Test
+    void testGetStudentsByCourseId() {
+        // Mock findById to return a course
+        when(courseRepository.findById(course.getId())).thenReturn(Optional.of(course));
+
+        // Call the service method to get the students
+        List<StudentModel> students = courseService.getStudentsByCourseId(course.getId());
+
+        // Verify that the correct students are returned
+        assertNotNull(students);
+        assertEquals(2, students.size());
+        assertEquals("John Doe", students.get(0).getName());
+        assertEquals("Jane Smith", students.get(1).getName());
+    }
+
+    @Test
+    void testGetMediaFilesByCourseId() {
+        // Mock findById to return a course
+        when(courseRepository.findById(course.getId())).thenReturn(Optional.of(course));
+
+        // Add a media file
+        course.getMediaFiles().add("C:/uploads/lesson1.mp4");
+
+        // Call the service method to get media files
+        List<String> mediaFiles = courseService.getMediaFilesByCourseId(course.getId());
+
+        // Verify that the correct media file is returned
+        assertNotNull(mediaFiles);
+        assertEquals(1, mediaFiles.size());
+        assertEquals("C:/uploads/lesson1.mp4", mediaFiles.get(0));
+    }
+
+
 }
