@@ -28,6 +28,7 @@ public class CourseController {
         if (course.getListLessons() == null) {
             course.setListLessons(new ArrayList<>());
         }
+
         if (course.getMediaFiles() == null) {
             course.setMediaFiles(new ArrayList<>());
         }

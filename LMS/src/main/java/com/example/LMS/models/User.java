@@ -25,6 +25,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Version
+    private Long version;  // Add this field for optimistic locking
     private String name;
     private String password;
     private String role;
